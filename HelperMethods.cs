@@ -11,12 +11,14 @@ namespace Restaurant
 {
     internal class HelperMethods
     {
+        public static CancellationTokenSource _cancellation;
         public static List<string> breadCrumb = new List<string>();
         public static string CurrentUser = null!;
-        private static Timer autoLogout;
-        private static bool keyPressed = false;
-        public static void InitMainMenu()
+        private static Timer _autoLogout;
+        private static bool _keyPressed = false;
+        public static void InitMainMenu(CancellationTokenSource cts)
         {
+            _cancellation = cts;
             breadCrumb.Add("Main menu");
 
             var testEmployees = new List<Employee>
@@ -96,69 +98,16 @@ namespace Restaurant
             }
 
             
-            if (breadCrumb.Count > 1)
+            if (breadCrumb.Count > 0)
             {
                 Console.WriteLine("");
-                breadCrumb.ForEach(b => Console.Write(b + " => "));
-                //breadCrumb.ForEach(b => Console.Write(b.Split().ToString() + " => "));
+                Console.Write(string.Join(" => ", breadCrumb));
                 Console.WriteLine("\n");
             }
         }
-        /*private static void PrintMenu()
-        {
-            Console.WriteLine("Select action:");
-            List<string> menu = new List<string>
-            {
-                "    0. Login",
-                "    1. See table availability",
-                "    2. Place an order",
-                "    3. Close an order",
-                "    4. Make table reservation",
-                "    5. Exit"
-            };
-            menu.ForEach(x => Console.WriteLine(x));
-        }*/
-        /*private static void MenuInteraction(ref string CurrentUser, List<Employee> testEmployees)
-        {
-            int selection = 0;
-            SelectedMenuNumberAction(ref CurrentUser, testEmployees);
-            do
-            {
-                Console.Clear();
-                PrintWelcomeScreen();
-                selection = SelectMenuNumber();
-                if (selection != 5)
-                {
-                    SelectedMenuNumberAction(selection, ref CurrentUser, testEmployees);
-                }
-                else
-                {
-                    Console.WriteLine("\nExiting the application... Goodbye!");
-                    break;
-                }
-            }
-            while (selection != 5);
-        }*/
-        /*private static int SelectMenuNumber()
-        {
-            int selection = -1;
-            do
-            {
-                if (int.TryParse(Console.ReadLine(), out selection) && selection >= 0 && selection <= 5)
-                {
-                    return selection;
-                }
-                else
-                {
-                    PrintError("Incorrect selection!");
-                    Console.Write("Select action number: ");
-                }
-            }
-            while (true);
-        }*/
         public static int MenuInteraction(List<string> menuOptions)
         {
-            var coordinateBuffer = 0;
+            var coordinateBuffer = 3;
             if (CurrentUser != null)
             {
                 coordinateBuffer = 4;
@@ -182,6 +131,8 @@ namespace Restaurant
                 var initialCursorPosition = Console.GetCursorPosition();
                 Console.SetCursorPosition(cursorPositionColumn, cursorPositionRow);
                 var key = Console.ReadKey();
+                _keyPressed = true;
+                //_autoLogout.Change(10000, 10000);
                 switch (key.Key)
                 {
                     case ConsoleKey.DownArrow:
@@ -247,38 +198,40 @@ namespace Restaurant
 
         private static void Login(ref string CurrentUser, List<Employee> testEmployees)
         {
-            ConsoleKeyInfo cki;
-            Console.CancelKeyPress += new ConsoleCancelEventHandler(CancelHandler);
             string username = null;
+
             while (true)
             {
                 Console.Write("\nUsername: ");
-                cki = Console.ReadKey(true);
                 username = Console.ReadLine();
-                if (string.IsNullOrEmpty(username) || !Regex.IsMatch(username, @"^[a-zA-Z]"))
+                if (_cancellation.Token.IsCancellationRequested)
                 {
-                    PrintError("Incorrect format!");
+                    Console.Write("\nCancelled... ");
+                    ProceedIn(3);
+                    _cancellation.Cancel();
+                    return;
+                }
+
+                if (testEmployees.FirstOrDefault(e => e.Username == username) != null)
+                {
+                    var loggedInEmployee = testEmployees.FirstOrDefault(e => e.Username == username);
+                    if (loggedInEmployee.IsManager == true && loggedInEmployee.IsEmployed == true)
+                    {
+                        break;
+                    }
+                    else if (loggedInEmployee.IsManager == true && loggedInEmployee.IsEmployed == false)
+                    {
+                        PrintError("User provided is a manager but the account has been disabled!");
+                        continue;
+                    }
+                    else if (loggedInEmployee.IsManager == false && loggedInEmployee.IsEmployed == true)
+                    {
+                        PrintError("User provided is not a manager!");
+                        continue;
+                    }
                 }
                 else
                 {
-                    if (testEmployees.FirstOrDefault(e => e.Username == username) != null)
-                    {
-                        var loggedInEmployee = testEmployees.FirstOrDefault(e => e.Username == username);
-                        if (loggedInEmployee.IsManager == true && loggedInEmployee.IsEmployed == true)
-                        {
-                            break;
-                        }
-                        else if (loggedInEmployee.IsManager == true && loggedInEmployee.IsEmployed == false)
-                        {
-                            PrintError("User provided is a manager but the account has been disabled!");
-                            continue;
-                        }
-                        else if (loggedInEmployee.IsManager == false && loggedInEmployee.IsEmployed == true)
-                        {
-                            PrintError("User provided is not a manager!");
-                            continue;
-                        }
-                    }
                     PrintError("User not found!");
                 }
             }
@@ -294,6 +247,11 @@ namespace Restaurant
                     Console.ResetColor();
                     //ProceedIn(3);
                     CurrentUser = username;
+                    _keyPressed = false;
+                    if (testEmployees.FirstOrDefault(e => e.Username == username)?.IsManager == true)
+                    {
+                        //StartAutoLogoutTimer(_cancellation);
+                    }
                     var optionSelected = -1;
                     breadCrumb.Add("Manager menu");
 
@@ -307,17 +265,13 @@ namespace Restaurant
                             "3. Restaurant management"
                         ];
 
-                        //StartAutoLogoutTimer();
-
                         optionSelected = MenuInteraction(menuOptions);
 
                         switch (optionSelected)
                         {
                             case 0:
                                 Console.Write("\nLogging out... ");
-                                CurrentUser = null;
-                                //StopAutoLogoutTimer();
-                                breadCrumb.Remove("Manager menu");
+                                Logout(_cancellation);
                                 ProceedIn(3);
                                 return;
                             case 1:
@@ -335,7 +289,7 @@ namespace Restaurant
                         }
                     }
                     while (optionSelected != 0);
-                    
+
                     break;
                 }
                 else
@@ -354,7 +308,6 @@ namespace Restaurant
                         Console.ResetColor();
                         Console.Write(" Cancelling login...\n");
                         ProceedIn(3);
-                        InitMainMenu();
                         break;
                     }
                     counter++;
@@ -363,7 +316,16 @@ namespace Restaurant
             while (counter < 4);
         }
 
-        private static string GetUserEncryptedPassword()
+        private static void Logout(CancellationTokenSource _cancellation)
+        {
+            CurrentUser = null;
+            StopAutoLogoutTimer();
+            breadCrumb.Remove("Manager menu");
+            return;
+            //InitMainMenu(_cancellation);
+        }
+
+        public static string GetUserEncryptedPassword()
         {
             string password = null;
             while (true)
@@ -398,35 +360,30 @@ namespace Restaurant
             return password;
         }
 
-        private static void CancelHandler(object sender, ConsoleCancelEventArgs args)
+        private static void StartAutoLogoutTimer(CancellationTokenSource _cancellation)
         {
-            args.Cancel = true;
-        }
-        /*private static void StartAutoLogoutTimer()
-        {
-            autoLogout = new Timer(_ =>
+            _autoLogout = new Timer(_ =>
             {
-                if (!keyPressed)
+                if (!_keyPressed)
                 {
-                    Console.SetCursorPosition(0, Console.WindowHeight - 1);
-                    Console.WriteLine("Logging out due to inactivity...");
+                    Console.SetCursorPosition(0, 13);
+                    Console.Write("Logging out due to inactivity... ");
                     ProceedIn(3);
                     StopAutoLogoutTimer();
+                    Logout(_cancellation);
                 }
-            }, null, 5000, Timeout.Infinite);
-        }*/
+                _keyPressed = false;
+            }, null, 10000, 10000);
+        }
 
-        /*private static void StopAutoLogoutTimer()
+        private static void StopAutoLogoutTimer()
         {
-            if (autoLogout != null)
+            if (_autoLogout != null)
             {
-                autoLogout.Dispose();
-                autoLogout = null;
+                _autoLogout.Dispose();
+                _autoLogout = null;
             }
-            Console.Clear();
-            CurrentUser = null;
-            PrintWelcomeScreen();
-        }*/
+        }
         private static void EmployeeManagement(List<Employee> testEmployees)
         {
             var optionSelected = -1;
@@ -463,7 +420,7 @@ namespace Restaurant
                         continue;
                     case 4:
                         breadCrumb.Add("Edit employee info");
-                        //Employee.EditEmployeeInfo();
+                        Employee.EditEmployeeInfo(testEmployees);
                         breadCrumb.Remove("Edit employee info");
                         continue;
                 }

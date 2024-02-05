@@ -59,14 +59,14 @@ namespace Restaurant
             var initialCursorPosition = Console.GetCursorPosition();
             Dictionary<int, List<int>> tableNumberPositions = new()
             {
-                { 1, [5, 15] },
-                { 2, [17, 15] },
-                { 3, [29, 15] },
-                { 4, [5, 21] },
-                { 5, [29, 21] },
-                { 6, [5, 34] },
-                { 7, [17, 34] },
-                { 8, [29, 34] }
+                { 1, [5, 18] },
+                { 2, [17, 18] },
+                { 3, [29, 18] },
+                { 4, [5, 24] },
+                { 5, [29, 24] },
+                { 6, [5, 37] },
+                { 7, [17, 37] },
+                { 8, [29, 37] }
             };
 
             foreach (var table in Tables)
@@ -88,7 +88,13 @@ namespace Restaurant
             {
                 Console.Write("\nWhich table to reserve (1-8): ");
                 var input = Console.ReadLine();
-                //if (int.TryParse(Console.ReadLine(), out int tableNumber))
+                if (HelperMethods._cancellation.Token.IsCancellationRequested)
+                {
+                    Console.Write("\nCancelled... ");
+                    HelperMethods.ProceedIn(3);
+                    HelperMethods._cancellation.Cancel();
+                    return;
+                }
                 if (int.TryParse(input, out var tableNumber))
                 {
                     var table = Tables.FirstOrDefault(t => t.TableNumber == tableNumber);
