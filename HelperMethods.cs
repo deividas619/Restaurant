@@ -11,32 +11,36 @@ namespace Restaurant
 {
     internal class HelperMethods
     {
-        public static string CurrentUser = null;
+        public static List<string> breadCrumb = new List<string>();
+        public static string CurrentUser = null!;
         private static Timer autoLogout;
         private static bool keyPressed = false;
         public static void InitMainMenu()
         {
-            List<Employee> testEmployees = new List<Employee>
-            {
-                new Employee ( 1, "Ned", "Flanders", "nedfla", "1234", true, true),
-                new Employee ( 2, "Bob", "Bobinski", "bobbob", "1234", true, true),
-                new Employee ( 3, "Tod", "Flanders", "todfla", "1234", false, true),
-                new Employee ( 4, "Rod", "Flanders", "rodfla", "1234", true, false),
-                new Employee ( 5, "Dennis", "Rodman", "denrod", "1234", false, false)
-            };
+            breadCrumb.Add("Main menu");
 
-            int optionSelected = -1;
+            var testEmployees = new List<Employee>
+            {
+                new( 1, "Ned", "Flanders", "nedfla", "1234", true, true),
+                new( 2, "Bob", "Bobinski", "bobbob", "1234", true, true),
+                new( 3, "Tod", "Flanders", "todfla", "1234", false, true),
+                new( 4, "Rod", "Flanders", "rodfla", "1234", true, false),
+                new( 5, "Dennis", "Rodman", "denrod", "1234", false, false)
+            };
+            
+            var optionSelected = -1;
             do
             {
-                List<string> menuOptions = new List<string>
-                {
+                List<string> menuOptions =
+                [
                     "0. Exit",
                     "1. Login",
                     "2. Check table availability",
                     "3. Make table reservation",
                     "4. Place an order",
-                    "5. Close an order"
-                };
+                    "5. List on-going orders",
+                    "6. Close an order"
+                ];
                 optionSelected = MenuInteraction(menuOptions);
 
                 switch (optionSelected)
@@ -53,11 +57,15 @@ namespace Restaurant
                         ReturnToMainMenu();
                         continue;
                     case 3:
+                        breadCrumb.Add("Table reservation");
                         Table.MakeTableReservation();
+                        breadCrumb.Remove("Table reservation");
                         continue;
                     case 4:
                         continue;
                     case 5:
+                        return;
+                    case 6:
                         return;
                 }
             }
@@ -66,7 +74,7 @@ namespace Restaurant
         public static void ProceedIn(int from)
         {
             Console.Write("Proceeding in: ");
-            for (int i = from; i >= 0; i--)
+            for (var i = from; i >= 0; i--)
             {
                 Console.Write(i);
                 Thread.Sleep(1000);
@@ -85,6 +93,15 @@ namespace Restaurant
                 Console.Write($"Logged in as: ");
                 Console.ResetColor();
                 Console.Write(CurrentUser + "\n");
+            }
+
+            
+            if (breadCrumb.Count > 1)
+            {
+                Console.WriteLine("");
+                breadCrumb.ForEach(b => Console.Write(b + " => "));
+                //breadCrumb.ForEach(b => Console.Write(b.Split().ToString() + " => "));
+                Console.WriteLine("\n");
             }
         }
         /*private static void PrintMenu()
@@ -141,23 +158,23 @@ namespace Restaurant
         }*/
         public static int MenuInteraction(List<string> menuOptions)
         {
-            int coordinateBuffer = 0;
+            var coordinateBuffer = 0;
             if (CurrentUser != null)
             {
-                coordinateBuffer = 1;
+                coordinateBuffer = 4;
             }
-            int option = 0;
-            bool selected = false;
-            int cursorPositionColumn = 0;
-            int cursorPositionRow = 4 + coordinateBuffer;
+            var option = 0;
+            var selected = false;
+            var cursorPositionColumn = 0;
+            var cursorPositionRow = 4 + coordinateBuffer;
 
             while (!selected)
             {
                 Console.Clear();
                 PrintWelcomeScreen();
 
-                Console.WriteLine("Select action:");
-                for (int i = 0; i < menuOptions.Count; i++)
+                Console.WriteLine("Select:");
+                for (var i = 0; i < menuOptions.Count; i++)
                 {
                     Console.WriteLine($"{(option == i ? "> " : "  ")}{menuOptions[i]}");
                 }
@@ -206,7 +223,7 @@ namespace Restaurant
             Console.WriteLine("\nTo return press 'q'");
             while (true)
             {
-                ConsoleKeyInfo i = Console.ReadKey(true);
+                var i = Console.ReadKey(true);
                 if (i.Key == ConsoleKey.Q)
                 {
                     return;
@@ -233,7 +250,7 @@ namespace Restaurant
             string username = null;
             while (true)
             {
-                Console.Write("Username: ");
+                Console.Write("\nUsername: ");
                 username = Console.ReadLine();
                 if (string.IsNullOrEmpty(username) || !Regex.IsMatch(username, @"^[a-zA-Z]"))
                 {
@@ -243,7 +260,7 @@ namespace Restaurant
                 {
                     if (testEmployees.FirstOrDefault(e => e.Username == username) != null)
                     {
-                        Employee loggedInEmployee = testEmployees.FirstOrDefault(e => e.Username == username);
+                        var loggedInEmployee = testEmployees.FirstOrDefault(e => e.Username == username);
                         if (loggedInEmployee.IsManager == true && loggedInEmployee.IsEmployed == true)
                         {
                             break;
@@ -260,11 +277,10 @@ namespace Restaurant
                         }
                     }
                     PrintError("User not found!");
-                    // cancel operation if q is entered
                 }
             }
 
-            int counter = 1;
+            var counter = 1;
             do
             {
                 Console.Write("Password: ");
@@ -275,17 +291,18 @@ namespace Restaurant
                     Console.ResetColor();
                     //ProceedIn(3);
                     CurrentUser = username;
-                    int optionSelected = -1;
+                    var optionSelected = -1;
+                    breadCrumb.Add("Manager menu");
 
                     do
                     {
-                        List<string> menuOptions = new List<string>
-                        {
+                        List<string> menuOptions =
+                        [
                             "0. Logout",
                             "1. Employee management",
                             "2. Item management",
                             "3. Restaurant management"
-                        };
+                        ];
 
                         //StartAutoLogoutTimer();
 
@@ -297,17 +314,21 @@ namespace Restaurant
                                 Console.Write("\nLogging out... ");
                                 CurrentUser = null;
                                 //StopAutoLogoutTimer();
+                                breadCrumb.Remove("Manager menu");
                                 ProceedIn(3);
                                 return;
                             case 1:
+                                breadCrumb.Add("Employee management");
                                 EmployeeManagement(testEmployees);
                                 continue;
                             case 2:
+                                breadCrumb.Add("Item management");
                                 //ItemManagement();
                                 return;
                             case 3:
-                                //RestaurantManagement();
-                                return;
+                                breadCrumb.Add("Restaurant management");
+                                RestaurantManagement();
+                                continue;
                         }
                     }
                     while (optionSelected != 0);
@@ -344,7 +365,7 @@ namespace Restaurant
             string password = null;
             while (true)
             {
-                ConsoleKeyInfo i = Console.ReadKey(true);
+                var i = Console.ReadKey(true);
                 if (i.Key == ConsoleKey.Enter)
                 {
                     break;
@@ -400,24 +421,25 @@ namespace Restaurant
         }*/
         private static void EmployeeManagement(List<Employee> testEmployees)
         {
-            int optionSelected = -1;
+            var optionSelected = -1;
+
             do
             {
-                List<string> menuOptions = new List<string>
-                {
+                List<string> menuOptions =
+                [
                     "0. Return",
                     "1. List all employees",
                     "2. Add an employee",
                     "3. Remove an employee",
                     "4. Edit employee info",
-                    "5. Edit restaurant info"
-                };
+                ];
 
                 optionSelected = MenuInteraction(menuOptions);
 
                 switch (optionSelected)
                 {
                     case 0:
+                        breadCrumb.Remove("Employee management");
                         return;
                     case 1:
                         Employee.ListAllEmployees(testEmployees);
@@ -427,11 +449,43 @@ namespace Restaurant
                         Employee.AddEmployee(testEmployees);
                         continue;
                     case 3:
+                        breadCrumb.Add("Remove an employee");
                         Employee.RemoveEmployee(testEmployees);
+                        breadCrumb.Remove("Remove an employee");
                         continue;
                     case 4:
+                        breadCrumb.Add("Edit employee info");
+                        //Employee.EditEmployeeInfo();
+                        breadCrumb.Remove("Edit employee info");
                         continue;
-                    case 5:
+                }
+            }
+            while (optionSelected != 0);
+        }
+
+        private static void RestaurantManagement()
+        {
+            var optionSelected = -1;
+
+            do
+            {
+                List<string> menuOptions =
+                [
+                    "0. Return",
+                    "1. Edit restaurant working hours"
+                ];
+
+                optionSelected = MenuInteraction(menuOptions);
+
+                switch (optionSelected)
+                {
+                    case 0:
+                        breadCrumb.Remove("Restaurant management");
+                        continue;
+                    case 1:
+                        breadCrumb.Add("Working hours");
+                        Restaurant.SetWorkingHours();
+                        breadCrumb.Remove("Working hours");
                         continue;
                 }
             }

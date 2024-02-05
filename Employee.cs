@@ -29,6 +29,7 @@ namespace Restaurant
 
         public static void ListAllEmployees(List<Employee> testEmployees)
         {
+            Console.WriteLine("");
             foreach (var employee in testEmployees)
             {
                 Console.WriteLine($"{employee.Id}. {employee.Name} {employee.Surname} ({employee.Username})");
@@ -63,7 +64,7 @@ namespace Restaurant
 
         public static void AddEmployee(List<Employee> testEmployees)
         {
-            Console.WriteLine("Provide new employee information:");
+            Console.WriteLine("\nProvide new employee information:");
             Console.Write("Name: ");
             var newEmployeeName = Console.ReadLine();
             Console.Write("Surname: ");
@@ -76,13 +77,13 @@ namespace Restaurant
         public static void RemoveEmployee(List<Employee> testEmployees)
         {
             List<string> employeesToRemove = testEmployees.Where(e => e.IsEmployed == true).Where(e => e.IsManager == false).Select(e => $"{e.Name} {e.Surname}").ToList();
-            int optionSelected = HelperMethods.MenuInteraction(employeesToRemove);
-            Employee employeeToRemove = testEmployees.FirstOrDefault(e => $"{e.Name} {e.Surname}" == employeesToRemove[optionSelected]);
+            var optionSelected = HelperMethods.MenuInteraction(employeesToRemove);
+            var employeeToRemove = testEmployees.FirstOrDefault(e => $"{e.Name} {e.Surname}" == employeesToRemove[optionSelected]);
             while (true)
             {
                 Console.Write($"Remove {employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})? (y/N): ");
                 var input = Console.ReadLine();
-                if (input == "y" || input == "Y")
+                if (input is "y" or "Y")
                 {
                     employeeToRemove.IsEmployed = false;
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -91,7 +92,7 @@ namespace Restaurant
                     Console.Write($"{employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})!");
                     break;
                 }
-                else if (input == "n" || input == "N")
+                else if (input is "n" or "N")
                 {
                     break;
                 }

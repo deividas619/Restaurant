@@ -12,8 +12,8 @@ namespace Restaurant
         public int TableNumber;
         public int Seats;
         public bool IsFree = true;
-        public static List<Table> Tables { get; set; } = new List<Table>
-        {
+        public static List<Table> Tables { get; set; } =
+        [
             new Table { TableNumber = 1, Seats = 4, IsFree = true },
             new Table { TableNumber = 2, Seats = 4, IsFree = true },
             new Table { TableNumber = 3, Seats = 4, IsFree = true },
@@ -22,7 +22,7 @@ namespace Restaurant
             new Table { TableNumber = 6, Seats = 10, IsFree = true },
             new Table { TableNumber = 7, Seats = 10, IsFree = true },
             new Table { TableNumber = 8, Seats = 10, IsFree = true }
-        };
+        ];
 
         public static void CheckTableAvailability()
         {
@@ -57,16 +57,16 @@ namespace Restaurant
 |---------------------------------|");
 
             var initialCursorPosition = Console.GetCursorPosition();
-            Dictionary<int, List<int>> tableNumberPositions = new Dictionary<int, List<int>>
+            Dictionary<int, List<int>> tableNumberPositions = new()
             {
-                { 1, [5, 14] },
-                { 2, [17, 14] },
-                { 3, [29, 14] },
-                { 4, [5, 20] },
-                { 5, [29, 20] },
-                { 6, [5, 33] },
-                { 7, [17, 33] },
-                { 8, [29, 33] }
+                { 1, [5, 15] },
+                { 2, [17, 15] },
+                { 3, [29, 15] },
+                { 4, [5, 21] },
+                { 5, [29, 21] },
+                { 6, [5, 34] },
+                { 7, [17, 34] },
+                { 8, [29, 34] }
             };
 
             foreach (var table in Tables)
@@ -89,7 +89,7 @@ namespace Restaurant
                 Console.Write("\nWhich table to reserve (1-8): ");
                 var input = Console.ReadLine();
                 //if (int.TryParse(Console.ReadLine(), out int tableNumber))
-                if (int.TryParse(input, out int tableNumber))
+                if (int.TryParse(input, out var tableNumber))
                 {
                     var table = Tables.FirstOrDefault(t => t.TableNumber == tableNumber);
                     if (table != null && table.IsFree)
@@ -109,10 +109,6 @@ namespace Restaurant
                     {
                         HelperMethods.PrintError($"Table {tableNumber} not found!");
                     }
-                }
-                else if (char.TryParse(input, out char q)) // cancel operation if q is entered
-                {
-
                 }
                 else
                 {
