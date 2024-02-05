@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Restaurant
 {
-    internal class Drinks : ItemGeneral
+    internal class Items
     {
 
     }
