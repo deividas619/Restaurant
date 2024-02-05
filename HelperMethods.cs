@@ -247,10 +247,13 @@ namespace Restaurant
 
         private static void Login(ref string CurrentUser, List<Employee> testEmployees)
         {
+            ConsoleKeyInfo cki;
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(CancelHandler);
             string username = null;
             while (true)
             {
                 Console.Write("\nUsername: ");
+                cki = Console.ReadKey(true);
                 username = Console.ReadLine();
                 if (string.IsNullOrEmpty(username) || !Regex.IsMatch(username, @"^[a-zA-Z]"))
                 {
@@ -393,6 +396,11 @@ namespace Restaurant
                 }
             }
             return password;
+        }
+
+        private static void CancelHandler(object sender, ConsoleCancelEventArgs args)
+        {
+            args.Cancel = true;
         }
         /*private static void StartAutoLogoutTimer()
         {
