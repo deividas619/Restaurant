@@ -117,11 +117,53 @@ namespace Restaurant
             }
             HelperMethods.ReturnToMainMenu();
         }
-        public void UpdateEstimatedFinishTime()
+        public static void CloseTable(List<Table> tables)
         {
-            EstimatedFinishTime = DateTime.Now.AddMinutes(Items.Count * AverageTimePerOrder);
+            Table.CheckTableAvailability();
+            Console.Write("Which table placed an order (1-8): ");
+            int.TryParse(Console.ReadLine(), out int tableNumber);
+            var table = tables.FirstOrDefault(t => t.TableNumber == tableNumber);
+
+            if (table != null)
+            {
+                if (!table.IsFree)
+                {
+                    List<Order> ordersForTable = Order.CombineOrdersForTable(table.TableNumber);
+                    decimal totalAmountForTable = 0;
+                    foreach (var order in ordersForTable)
+                    {
+                        totalAmountForTable += order.CalculateTotalAmount();
+                    }
+                    Console.WriteLine($"\nTotal amount for Table {table.TableNumber}: {totalAmountForTable}");
+                }
+                else
+                {
+                    HelperMethods.PrintError($"Table {table.TableNumber} doesn't have active orders!");
+                }
+            }
+            else
+            {
+                HelperMethods.PrintError($"Table {tableNumber} not found!");
+            }
+            table.IsFree = true;
+            GenerateBill();
+            HelperMethods.ReturnToMainMenu();
         }
-        public void CloseOrder()
+        public decimal CalculateTotalAmount()
+        {
+            decimal totalAmount = 0;
+            foreach (var orderItem in Items)
+            {
+                totalAmount += orderItem.Item.Price * orderItem.Amount;
+            }
+            return totalAmount;
+        }
+        public static List<Order> CombineOrdersForTable(int tableNumber)
+        {
+            List<Order> ordersForTable = Program.database.Order.Where(order => order.Table.TableNumber == tableNumber).ToList();
+            return ordersForTable;
+        }
+        public static void GenerateBill()
         {
 
         }

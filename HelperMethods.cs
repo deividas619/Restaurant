@@ -67,7 +67,7 @@ namespace Restaurant
                         Order.ListOngoingOrders();
                         continue;
                     case 6:
-                        Order.CloseOrder();
+                        Order.CloseTable(Tables);
                         continue;
                 }
             }
