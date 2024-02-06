@@ -41,17 +41,6 @@ namespace Restaurant
 
             List<string> menuOptions = WorkingHours.ToList();
 
-            /*List<string> menuOptions =
-            [
-                $"Mon (from {defaultHourFrom} to {defaultHourTo})",
-                $"Tue (from {defaultHourFrom} to {defaultHourTo})",
-                $"Wed (from {defaultHourFrom} to {defaultHourTo})",
-                $"Thu (from {defaultHourFrom} to {defaultHourTo})",
-                $"Fri (from {defaultHourFrom} to {defaultHourTo})",
-                $"Sat (from {defaultHourFrom} to {defaultHourTo})",
-                $"Sun (day off)"
-            ];*/
-
             optionSelected = HelperMethods.MenuInteraction(menuOptions);
 
             Console.WriteLine($"\nEditing: {menuOptions[optionSelected]}");

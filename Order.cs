@@ -6,8 +6,124 @@ using System.Threading.Tasks;
 
 namespace Restaurant
 {
-    internal class Order
+    public class OrderItem
     {
+        public Item Item { get; set; }
+        public int Amount { get; set; }
 
+        public OrderItem(Item item, int amount)
+        {
+            Item = item;
+            Amount = amount;
+        }
+    }
+    public class Order
+    {
+        public int OrderID { get; private set; }
+        public List<OrderItem> Items { get; set; } = new List<OrderItem>();
+        public Table Table { get; set; }
+        private int AverageTimePerOrder { get; set; } = 1;
+        private string OrderStatus { get; set; } = "Ongoing";
+        public DateTime EstimatedFinishTime { get; private set; }
+        private static int _nextOrderId = 1;
+
+        public Order(Table table)
+        {
+            OrderID = _nextOrderId++;
+            Table = table;
+            EstimatedFinishTime = DateTime.Now.AddMinutes(AverageTimePerOrder);
+        }
+        public static void PlaceOrder(List<Table> tables, List<Item> items)
+        {
+            Table.CheckTableAvailability();
+            Console.Write("Which table placed an order (1-8): ");
+            int.TryParse(Console.ReadLine(), out int tableNumber);
+            var table = tables.FirstOrDefault(t => t.TableNumber == tableNumber);
+
+            if (table != null)
+            {
+                Console.WriteLine("\nSelect items ordered:");
+                List<string> itemsList = items.Select(i => i.Name).ToList();
+                var order = new Order(table);
+
+                do
+                {
+                    var optionSelected = HelperMethods.MenuInteraction(itemsList);
+                    var amount = 0;
+                    do
+                    {
+                        Console.Write($"\nSelected: {itemsList[optionSelected]}. How many: ");
+                        int.TryParse(Console.ReadLine(), out amount);
+                        if (amount < 1 || amount > 99)
+                        {
+                            HelperMethods.PrintError("Incorrect input!");
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    while (true);
+
+                    order.AddItem(items[optionSelected], amount);
+
+                    Console.Write("\nDo you want to add more items? (y/N): ");
+                    if (Console.ReadLine().ToUpper() != "Y")
+                    {
+                        break;
+                    }
+                }
+                while (true);
+
+                Program.database.Order.Add(order);
+                Program.UpdateDatabase(Program.database);
+                table.IsFree = false;
+                _ = order.MealPreparationAsync();
+                HelperMethods.ProceedIn(3);
+                return;
+            }
+            else
+            {
+                HelperMethods.PrintError($"Table {tableNumber} not found!");
+            }
+        }
+        public void AddItem(Item item, int amount)
+        {
+            Items.Add(new OrderItem(item, amount));
+        }
+        public async Task MealPreparationAsync()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(60));
+
+            foreach (var item in Items)
+            {
+                await Task.Delay(TimeSpan.FromMinutes(AverageTimePerOrder));
+            }
+
+            OrderStatus = "Completed";
+        }
+        public static void ListOngoingOrders()
+        {
+            foreach (var ongoingOrder in Program.database.Order.Where(o => o.OrderStatus == "Ongoing"))
+            {
+                Console.WriteLine($"\nOrder: {ongoingOrder.OrderID}. Table: {ongoingOrder.Table.TableNumber}");
+                Console.WriteLine($"Estimated Finish Time: {ongoingOrder.EstimatedFinishTime.AddMinutes(1).ToString("HH:mm")}");
+
+                int counter = 1;
+                foreach (var orderItem in ongoingOrder.Items)
+                {
+                    Console.WriteLine($"  Item {counter++}: ({orderItem.Amount}) {orderItem.Item.Name}");
+                }
+            }
+            HelperMethods.ReturnToMainMenu();
+        }
+        public void UpdateEstimatedFinishTime()
+        {
+            EstimatedFinishTime = DateTime.Now.AddMinutes(Items.Count * AverageTimePerOrder);
+        }
+        public void CloseOrder()
+        {
+
+        }
     }
 }

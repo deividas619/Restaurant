@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Restaurant
 {
-    internal class Employee
+    public class Employee
     {
         public int Id { get; set; }
         public string Name { get; private set; }
@@ -26,11 +26,10 @@ namespace Restaurant
             IsEmployed = isEmployed;
             IsManager = isManager;
         }
-
-        public static void ListAllEmployees(List<Employee> testEmployees)
+        public static void ListAllEmployees(List<Employee> Employees)
         {
             Console.WriteLine("");
-            foreach (var employee in testEmployees)
+            foreach (var employee in Employees)
             {
                 Console.WriteLine($"{employee.Id}. {employee.Name} {employee.Surname} ({employee.Username})");
                 Console.Write($"   Works: ");
@@ -61,7 +60,7 @@ namespace Restaurant
                 }
             }
         }
-        public static void AddEmployee(List<Employee> testEmployees)
+        public static void AddEmployee(List<Employee> Employees)
         {
             Console.WriteLine("\nProvide new employee information:");
             Console.Write("Name: ");
@@ -84,23 +83,24 @@ namespace Restaurant
                 return;
             }
 
-            if (string.IsNullOrEmpty(newEmployeeName) && string.IsNullOrEmpty(newEmployeeSurname))
+            if (!string.IsNullOrEmpty(newEmployeeName) && !string.IsNullOrEmpty(newEmployeeSurname))
             {
                 var newEmployeeUsername = $"{newEmployeeName.Substring(0, 3)}{newEmployeeSurname.Substring(0, 3)}";
                 var newEmployeePassword = "1234";
-                testEmployees.Add(new Employee(testEmployees.Count + 1, newEmployeeName, newEmployeeSurname, newEmployeeUsername, newEmployeePassword, true, false));
+                Employees.Add(new Employee(Employees.Count + 1, newEmployeeName, newEmployeeSurname, newEmployeeUsername, newEmployeePassword, true, false));
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("\nSuccessfully added ");
                 Console.ResetColor();
                 Console.Write($"{newEmployeeName} {newEmployeeSurname} ({newEmployeeUsername})! ");
+                Program.UpdateDatabase(Program.database);
                 HelperMethods.ProceedIn(3);
             }
         }
-        public static void RemoveEmployee(List<Employee> testEmployees)
+        public static void RemoveEmployee(List<Employee> Employees)
         {
-            List<string> employeesToRemove = testEmployees.Where(e => e.IsEmployed == true).Where(e => e.IsManager == false).Select(e => $"{e.Name} {e.Surname}").ToList();
+            List<string> employeesToRemove = Employees.Where(e => e.IsEmployed == true).Where(e => e.IsManager == false).Select(e => $"{e.Name} {e.Surname}").ToList();
             var optionSelected = HelperMethods.MenuInteraction(employeesToRemove);
-            var employeeToRemove = testEmployees.FirstOrDefault(e => $"{e.Name} {e.Surname}" == employeesToRemove[optionSelected]);
+            var employeeToRemove = Employees.FirstOrDefault(e => $"{e.Name} {e.Surname}" == employeesToRemove[optionSelected]);
             while (true)
             {
                 Console.Write($"Remove {employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})? (y/N): ");
@@ -112,6 +112,7 @@ namespace Restaurant
                     Console.Write("\nSuccessfully removed ");
                     Console.ResetColor();
                     Console.Write($"{employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})! ");
+                    Program.UpdateDatabase(Program.database);
                     HelperMethods.ProceedIn(3);
                     break;
                 }
@@ -125,11 +126,11 @@ namespace Restaurant
                 }
             }
         }
-        public static void EditEmployeeInfo(List<Employee> testEmployees)
+        public static void EditEmployeeInfo(List<Employee> Employees)
         {
-            List<string> employeesToEdit = testEmployees.Select(e => $"{e.Name} {e.Surname}").ToList();
+            List<string> employeesToEdit = Employees.Select(e => $"{e.Name} {e.Surname}").ToList();
             var optionSelected = HelperMethods.MenuInteraction(employeesToEdit);
-            var employeeToEdit = testEmployees.FirstOrDefault(e => $"{e.Name} {e.Surname}" == employeesToEdit[optionSelected]);
+            var employeeToEdit = Employees.FirstOrDefault(e => $"{e.Name} {e.Surname}" == employeesToEdit[optionSelected]);
             while (true)
             {
                 Console.Write($"\nEdit {employeeToEdit.Name} {employeeToEdit.Surname} ({employeeToEdit.Username})? (y/N): ");
@@ -155,28 +156,33 @@ namespace Restaurant
                             Console.Write("\nNew name: ");
                             string newName = Console.ReadLine();
                             employeeToEdit.Name = newName;
-                            continue;
+                            Program.UpdateDatabase(Program.database);
+                            return;
                         case 2:
                             Console.Write("\nNew surname: ");
                             string newSurname = Console.ReadLine();
                             employeeToEdit.Surname = newSurname;
-                            continue;
+                            Program.UpdateDatabase(Program.database);
+                            return;
                         case 3:
                             Console.Write("\nNew username: ");
                             string newUsername = Console.ReadLine();
                             employeeToEdit.Username = newUsername;
-                            continue;
+                            Program.UpdateDatabase(Program.database);
+                            return;
                         case 4:
                             Console.Write("\nNew password: ");
                             string newPassword = HelperMethods.GetUserEncryptedPassword();
                             employeeToEdit.Password = newPassword;
-                            continue;
+                            Program.UpdateDatabase(Program.database);
+                            return;
                         case 5:
                             Console.Write($"\nCurrently employed: {employeeToEdit.IsEmployed}. Switch? (y/N): ");
                             input = Console.ReadLine();
                             if (input is "y" or "Y")
                             {
                                 if (employeeToEdit.IsEmployed == false ? employeeToEdit.IsEmployed = true : employeeToEdit.IsEmployed = false);
+                                Program.UpdateDatabase(Program.database);
                             }
                             else if (input is "n" or "N")
                             {
@@ -192,9 +198,10 @@ namespace Restaurant
                             input = Console.ReadLine();
                             if (input is "y" or "Y")
                             {
-                                if (testEmployees.Count(e => e.IsManager) > 1)
+                                if (Employees.Count(e => e.IsManager) > 1)
                                 {
                                     if (employeeToEdit.IsManager == false ? employeeToEdit.IsManager = true : employeeToEdit.IsManager = false);
+                                    Program.UpdateDatabase(Program.database);
                                 }
                                 else
                                 {

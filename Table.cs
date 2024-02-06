@@ -7,22 +7,11 @@ using System.Threading.Tasks;
 
 namespace Restaurant
 {
-    internal class Table
+    public class Table
     {
         public int TableNumber;
         public int Seats;
         public bool IsFree = true;
-        public static List<Table> Tables { get; set; } =
-        [
-            new Table { TableNumber = 1, Seats = 4, IsFree = true },
-            new Table { TableNumber = 2, Seats = 4, IsFree = true },
-            new Table { TableNumber = 3, Seats = 4, IsFree = true },
-            new Table { TableNumber = 4, Seats = 4, IsFree = true },
-            new Table { TableNumber = 5, Seats = 4, IsFree = true },
-            new Table { TableNumber = 6, Seats = 10, IsFree = true },
-            new Table { TableNumber = 7, Seats = 10, IsFree = true },
-            new Table { TableNumber = 8, Seats = 10, IsFree = true }
-        ];
 
         public static void CheckTableAvailability()
         {
@@ -69,7 +58,7 @@ namespace Restaurant
                 { 8, [29, 37] }
             };
 
-            foreach (var table in Tables)
+            foreach (var table in Program.database.Tables)
             {
                 tableNumberPositions.TryGetValue(table.TableNumber, out var position);
                 Console.SetCursorPosition(position[0], position[1]);
@@ -80,7 +69,6 @@ namespace Restaurant
 
             Console.SetCursorPosition(initialCursorPosition.Left, initialCursorPosition.Top);
         }
-
         public static void MakeTableReservation()
         {
             CheckTableAvailability();
@@ -97,13 +85,14 @@ namespace Restaurant
                 }
                 if (int.TryParse(input, out var tableNumber))
                 {
-                    var table = Tables.FirstOrDefault(t => t.TableNumber == tableNumber);
+                    var table = Program.database.Tables.FirstOrDefault(t => t.TableNumber == tableNumber);
                     if (table != null && table.IsFree)
                     {
                         table.IsFree = false;
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"Table {tableNumber} reserved successfully!");
                         Console.ResetColor();
+                        Program.UpdateDatabase(Program.database);
                         HelperMethods.ProceedIn(3);
                         break;
                     }

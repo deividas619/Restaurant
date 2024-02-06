@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Restaurant
 {
-    internal class Item
+    public class Item
     {
         public string Name;
         public decimal Price;
@@ -33,7 +35,6 @@ namespace Restaurant
                 Console.WriteLine($"{item.Name} ({item.Price}€) || Food: {item.IsFood} || Drink: {item.IsDrink} || Available: {item.IsAvailable}");
             }
         }
-
         public static void AddItem(List<Item> Items)
         {
             do
@@ -110,6 +111,7 @@ namespace Restaurant
                         Console.Write("\nSuccessfully added ");
                         Console.ResetColor();
                         Console.Write($"{newItemName} ({newItemPrice}€)! ");
+                        Program.UpdateDatabase(Program.database);
                         HelperMethods.ProceedIn(3);
                         break;
                     }
@@ -121,7 +123,6 @@ namespace Restaurant
             }
             while (true);
         }
-
         public static void RemoveItem(List<Item> Items)
         {
             List<string> itemsToRemove = Items.Select(i => $"{i.Name}").ToList();
@@ -138,6 +139,7 @@ namespace Restaurant
                     Console.Write("\nSuccessfully removed ");
                     Console.ResetColor();
                     Console.Write($"{itemToRemove.Name} ");
+                    Program.UpdateDatabase(Program.database);
                     HelperMethods.ProceedIn(3);
                     break;
                 }
@@ -151,10 +153,77 @@ namespace Restaurant
                 }
             }
         }
-
         public static void EditItemInfo(List<Item> Items)
         {
-
+            List<string> itemsToEdit = Items.Select(i => $"{i.Name}").ToList();
+            var optionSelected = HelperMethods.MenuInteraction(itemsToEdit);
+            var itemToEdit = Items.FirstOrDefault(i => i == Items[optionSelected]);
+            while (true)
+            {
+                Console.Write($"\nEdit {itemToEdit.Name}? (y/N): ");
+                var input = Console.ReadLine();
+                if (input is "y" or "Y")
+                {
+                    List<string> menuOptions =
+                    [
+                        "0. Return",
+                        "1. Name",
+                        "2. Price",
+                        "3. Description",
+                        "4. Availability"
+                    ];
+                    optionSelected = HelperMethods.MenuInteraction(menuOptions);
+                    switch (optionSelected)
+                    {
+                        case 0:
+                            return;
+                        case 1:
+                            Console.Write("\nNew item name: ");
+                            string newName = Console.ReadLine();
+                            itemToEdit.Name = newName;
+                            Program.UpdateDatabase(Program.database);
+                            return;
+                        case 2:
+                            Console.Write("\nNew item price: ");
+                            decimal.TryParse(Console.ReadLine(), out var newPrice);
+                            itemToEdit.Price = newPrice;
+                            Program.UpdateDatabase(Program.database);
+                            return;
+                        case 3:
+                            Console.Write("\nNew item description: ");
+                            string newDescription = Console.ReadLine();
+                            itemToEdit.Description = newDescription;
+                            Program.UpdateDatabase(Program.database);
+                            return;
+                        case 4:
+                            Console.Write($"\nCurrently item is available: {itemToEdit.IsAvailable}. Switch? (y/N): ");
+                            input = Console.ReadLine();
+                            if (input is "y" or "Y")
+                            {
+                                if (itemToEdit.IsAvailable == false ? itemToEdit.IsAvailable = true : itemToEdit.IsAvailable = false) ;
+                                Program.UpdateDatabase(Program.database);
+                            }
+                            else if (input is "n" or "N")
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                HelperMethods.PrintError("Incorrect selection!");
+                            }
+                            break;
+                    }
+                }
+                else if (input is "n" or "N")
+                {
+                    break;
+                }
+                else
+                {
+                    HelperMethods.PrintError("Incorrect selection!");
+                }
+                return;
+            }
         }
     }
 }

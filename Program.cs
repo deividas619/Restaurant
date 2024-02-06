@@ -9,8 +9,7 @@ namespace Restaurant
 {
     internal class Program
     {
-        //public static JObject databaseObject = JObject.Parse(File.ReadAllText(@"Database.json"));
-
+        public static RestaurantData database = JsonConvert.DeserializeObject<RestaurantData>(File.ReadAllText(@"Database.json"));
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -21,36 +20,13 @@ namespace Restaurant
                 cts.Cancel();
             };
 
-            /*Database db = new Database
-            {
-                Restaurant = new("Restaurant_1"),
-                List<Employee> = new
-                {
-                    (1, "Ned", "Flanders", "nedfla", "1234", true, true),
-                    (2, "Bob", "Bobinski", "bobbob", "1234", true, true),
-                    (3, "Tod", "Flanders", "todfla", "1234", false, true),
-                    (4, "Rod", "Flanders", "rodfla", "1234", true, false),
-                    (5, "Dennis", "Rodman", "denrod", "1234", false, false)
-                },
-                List<Items> items = new(),
-            };*/
-
-            ReadJSON();
-
             HelperMethods.InitMainMenu(cts);
         }
 
-        public static void ReadJSON()
-        {
-            /*using (StreamReader sr = File.OpenText(@"Database.json"))
-            {
-                var myObject = JsonConvert.DeserializeObject<List<DatabaseModel>>(sr.ReadToEnd());
-            }*/
-        }
-        public static void WriteJSON(List<DatabaseModel> database)
+        public static void UpdateDatabase(RestaurantData database)
         {
             string jsonOutput = JsonConvert.SerializeObject(database, Formatting.Indented);
-            File.WriteAllText("database.json", jsonOutput);
+            File.WriteAllText("Database.json", jsonOutput);
         }
     }
 }

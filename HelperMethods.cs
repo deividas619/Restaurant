@@ -16,21 +16,16 @@ namespace Restaurant
         public static string CurrentUser = null!;
         private static Timer _autoLogout;
         private static bool _keyPressed = false;
+        
         public static void InitMainMenu(CancellationTokenSource cts)
         {
             _cancellation = cts;
             breadCrumb.Add("Main menu");
             
-            var testEmployees = new List<Employee>
-            {
-                new( 1, "Ned", "Flanders", "nedfla", "1234", true, true),
-                new( 2, "Bob", "Bobinski", "bobbob", "1234", true, true),
-                new( 3, "Tod", "Flanders", "todfla", "1234", false, true),
-                new( 4, "Rod", "Flanders", "rodfla", "1234", true, false),
-                new( 5, "Dennis", "Rodman", "denrod", "1234", false, false)
-            };
-            
+            var Tables = Program.database.Tables;
+            var Items = Program.database.Item;
             var optionSelected = -1;
+
             do
             {
                 List<string> menuOptions =
@@ -52,7 +47,7 @@ namespace Restaurant
                         Environment.Exit(0);
                         continue;
                     case 1:
-                        Login(ref CurrentUser, testEmployees);
+                        Login(ref CurrentUser);
                         continue;
                     case 2:
                         Table.CheckTableAvailability();
@@ -64,11 +59,16 @@ namespace Restaurant
                         breadCrumb.Remove("Table reservation");
                         continue;
                     case 4:
+                        breadCrumb.Add("Place an order");
+                        Order.PlaceOrder(Tables, Items);
+                        breadCrumb.Remove("Place an order");
                         continue;
                     case 5:
-                        return;
+                        Order.ListOngoingOrders();
+                        continue;
                     case 6:
-                        return;
+                        Order.CloseOrder();
+                        continue;
                 }
             }
             while (optionSelected != 0);
@@ -169,7 +169,7 @@ namespace Restaurant
             }
             return option;
         }
-        private static void ReturnToMainMenu()
+        public static void ReturnToMainMenu()
         {
             Console.WriteLine("\nTo return press 'q'");
             while (true)
@@ -195,9 +195,9 @@ namespace Restaurant
             Console.ResetColor();
             Console.Write(" Try again...\n");
         }
-
-        private static void Login(ref string CurrentUser, List<Employee> testEmployees)
+        private static void Login(ref string CurrentUser)
         {
+            var Employees = Program.database.Employees;
             string username = null;
 
             while (true)
@@ -212,9 +212,9 @@ namespace Restaurant
                     return;
                 }
 
-                if (testEmployees.FirstOrDefault(e => e.Username == username) != null)
+                if (Employees.FirstOrDefault(e => e.Username == username) != null)
                 {
-                    var loggedInEmployee = testEmployees.FirstOrDefault(e => e.Username == username);
+                    var loggedInEmployee = Employees.FirstOrDefault(e => e.Username == username);
                     if (loggedInEmployee.IsManager == true && loggedInEmployee.IsEmployed == true)
                     {
                         break;
@@ -240,7 +240,7 @@ namespace Restaurant
             do
             {
                 Console.Write("Password: ");
-                if (GetUserEncryptedPassword() == testEmployees.FirstOrDefault(e => e.Username == username).Password)
+                if (GetUserEncryptedPassword() == Employees.FirstOrDefault(e => e.Username == username).Password)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\nLogin successful!");
@@ -248,7 +248,7 @@ namespace Restaurant
                     //ProceedIn(3);
                     CurrentUser = username;
                     _keyPressed = false;
-                    if (testEmployees.FirstOrDefault(e => e.Username == username)?.IsManager == true)
+                    if (Employees.FirstOrDefault(e => e.Username == username)?.IsManager == true)
                     {
                         //StartAutoLogoutTimer(_cancellation);
                     }
@@ -276,7 +276,7 @@ namespace Restaurant
                                 return;
                             case 1:
                                 breadCrumb.Add("Employee management");
-                                EmployeeManagement(testEmployees);
+                                EmployeeManagement();
                                 continue;
                             case 2:
                                 breadCrumb.Add("Item management");
@@ -315,7 +315,6 @@ namespace Restaurant
             }
             while (counter < 4);
         }
-
         private static void Logout(CancellationTokenSource _cancellation)
         {
             CurrentUser = null;
@@ -324,7 +323,6 @@ namespace Restaurant
             return;
             //InitMainMenu(_cancellation);
         }
-
         public static string GetUserEncryptedPassword()
         {
             string password = null;
@@ -359,7 +357,6 @@ namespace Restaurant
             }
             return password;
         }
-
         private static void StartAutoLogoutTimer(CancellationTokenSource _cancellation)
         {
             _autoLogout = new Timer(_ =>
@@ -375,7 +372,6 @@ namespace Restaurant
                 _keyPressed = false;
             }, null, 10000, 10000);
         }
-
         private static void StopAutoLogoutTimer()
         {
             if (_autoLogout != null)
@@ -384,8 +380,9 @@ namespace Restaurant
                 _autoLogout = null;
             }
         }
-        private static void EmployeeManagement(List<Employee> testEmployees)
+        private static void EmployeeManagement()
         {
+            var Employees = Program.database.Employees;
             var optionSelected = -1;
 
             do
@@ -407,27 +404,26 @@ namespace Restaurant
                         breadCrumb.Remove("Employee management");
                         return;
                     case 1:
-                        Employee.ListAllEmployees(testEmployees);
+                        Employee.ListAllEmployees(Employees);
                         ReturnToMainMenu();
                         continue;
                     case 2:
-                        Employee.AddEmployee(testEmployees);
+                        Employee.AddEmployee(Employees);
                         continue;
                     case 3:
                         breadCrumb.Add("Remove an employee");
-                        Employee.RemoveEmployee(testEmployees);
+                        Employee.RemoveEmployee(Employees);
                         breadCrumb.Remove("Remove an employee");
                         continue;
                     case 4:
                         breadCrumb.Add("Edit employee info");
-                        Employee.EditEmployeeInfo(testEmployees);
+                        Employee.EditEmployeeInfo(Employees);
                         breadCrumb.Remove("Edit employee info");
                         continue;
                 }
             }
             while (optionSelected != 0);
         }
-
         private static void RestaurantManagement()
         {
             var optionSelected = -1;
@@ -456,17 +452,9 @@ namespace Restaurant
             }
             while (optionSelected != 0);
         }
-
         private static void ItemManagement()
         {
-            List<Item> items = new List<Item>
-            {
-                new Item("Kebab", (decimal)4.50, "Agurkai, Lavašas, Pomidorai, Svogūnai, Mėsa, Pekino/švieži kopūstai", true, false, true),
-                new Item("Wrap", (decimal)5.50, "Lavašas, Pekino/švieži kopūstai, Traški vištiena, Marinuoti agurkai, Raudonieji svogūnai, Pomidorai", true, false, true),
-                new Item("Burger", (decimal)7.50, "Marinuoti agurkai, Burgerio bandelė su sezamais, Pomidorai, Raudonieji svogūnai, Rūkyta šoninė, Gouda sūris, Salotos, Angus brandintos jautienos paplotėlis, BBQ padažas, Čipotle padažas", true, false, true),
-                new Item("Pepsi", (decimal)1.30, "Pepsi", false, true, true),
-                new Item("Still water", (decimal)1.20, "Still water", false, true, true)
-            };
+            var Items = Program.database.Item;
             var optionSelected = -1;
 
             do
@@ -488,20 +476,20 @@ namespace Restaurant
                         breadCrumb.Remove("Item management");
                         return;
                     case 1:
-                        Item.ListAllItems(items);
+                        Item.ListAllItems(Items);
                         ReturnToMainMenu();
                         continue;
                     case 2:
-                        Item.AddItem(items);
+                        Item.AddItem(Items);
                         continue;
                     case 3:
                         breadCrumb.Add("Remove an item");
-                        Item.RemoveItem(items);
+                        Item.RemoveItem(Items);
                         breadCrumb.Remove("Remove an item");
                         continue;
                     case 4:
                         breadCrumb.Add("Edit item info");
-                        Item.EditItemInfo(items);
+                        Item.EditItemInfo(Items);
                         breadCrumb.Remove("Edit item info");
                         continue;
                 }

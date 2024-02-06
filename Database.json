@@ -1,149 +1,143 @@
-// https://jsonblob.com/
-// https://json2csharp.com/
 {
-  "restaurant": {
-    "employees": [
-      {
-        "id": 1,
-        "name": "Ned",
-        "surname": "Flanders",
-        "username": "nedfla",
-        "password": "1234",
-        "isEmployed": true,
-        "isManager": true
-      },
-      {
-        "id": 2,
-        "name": "Bob",
-        "surname": "Bobinski",
-        "username": "bobbob",
-        "password": "1234",
-        "isEmployed": true,
-        "isManager": true
-      },
-      {
-        "id": 3,
-        "name": "Tod",
-        "surname": "Flanders",
-        "username": "todfla",
-        "password": "1234",
-        "isEmployed": false,
-        "isManager": true
-      },
-      {
-        "id": 4,
-        "name": "Rod",
-        "surname": "Flanders",
-        "username": "rodfla",
-        "password": "1234",
-        "isEmployed": true,
-        "isManager": false
-      },
-      {
-        "id": 5,
-        "name": "Dennis",
-        "surname": "Rodman",
-        "username": "denrod",
-        "password": "1234",
-        "isEmployed": false,
-        "isManager": false
-      }
-    ],
-    "tables": [
-      {
-        "TableNumber": 1,
-        "Seats": 4,
-        "IsFree": "true"
-      },
-      {
-        "TableNumber": 2,
-        "Seats": 4,
-        "IsFree": "true"
-      },
-      {
-        "TableNumber": 3,
-        "Seats": 4,
-        "IsFree": "true"
-      },
-      {
-        "TableNumber": 4,
-        "Seats": 4,
-        "IsFree": "true"
-      },
-      {
-        "TableNumber": 5,
-        "Seats": 4,
-        "IsFree": "true"
-      },
-      {
-        "TableNumber": 6,
-        "Seats": 10,
-        "IsFree": "true"
-      },
-      {
-        "TableNumber": 7,
-        "Seats": 10,
-        "IsFree": "true"
-      },
-      {
-        "TableNumber": 8,
-        "Seats": 10,
-        "IsFree": "true"
-      }
-    ],
-    "order": [
-      {
-      }
-    ],
-    "item": [
-      {
-        "Name": "Kebab",
-        "Price": 4.50,
-        "Description": "Agurkai, Lavašas, Pomidorai, Svogūnai, Mėsa, Pekino/švieži kopūstai",
-        "IsFood": true,
-        "IsDrink": false,
-        "IsAvailable": true
-      },
-      {
-        "Name": "Wrap",
-        "Price": 5.50,
-        "Description": "Lavašas, Pekino/švieži kopūstai, Traški vištiena, Marinuoti agurkai, Raudonieji svogūnai, Pomidorai",
-        "IsFood": true,
-        "IsDrink": false,
-        "IsAvailable": true
-      },
-      {
-        "Name": "Burger",
-        "Price": 7.50,
-        "Description": "Marinuoti agurkai, Burgerio bandelė su sezamais, Pomidorai, Raudonieji svogūnai, Rūkyta šoninė, Gouda sūris, Salotos, Angus brandintos jautienos paplotėlis, BBQ padažas, Čipotle padažas",
-        "IsFood": true,
-        "IsDrink": false,
-        "IsAvailable": true
-      },
-      {
-        "Name": "Pepsi",
-        "Price": 1.30,
-        "Description": "Pepsi",
-        "IsFood": false,
-        "IsDrink": true,
-        "IsAvailable": true
-      },
-      {
-        "Name": "Still water",
-        "Price": 1.20,
-        "Description": "Still water",
-        "IsFood": false,
-        "IsDrink": true,
-        "IsAvailable": true
-      }
-    ],
-    "billCustomer": [
-      {
-      }
-    ],
-    "billRestaurant": [
-      {
-      }
-    ]
-  }
+  "Employees": [
+    {
+      "Id": 1,
+      "Name": "Ned",
+      "Surname": "Flanders",
+      "Username": "nedfla",
+      "Password": "1234",
+      "IsEmployed": true,
+      "IsManager": true
+    },
+    {
+      "Id": 2,
+      "Name": "Bob",
+      "Surname": "Bobinski",
+      "Username": "bobbob",
+      "Password": "1234",
+      "IsEmployed": true,
+      "IsManager": true
+    },
+    {
+      "Id": 3,
+      "Name": "Tod",
+      "Surname": "Flanders",
+      "Username": "todfla",
+      "Password": "1234",
+      "IsEmployed": false,
+      "IsManager": true
+    },
+    {
+      "Id": 4,
+      "Name": "Rod",
+      "Surname": "Flanders",
+      "Username": "rodfla",
+      "Password": "1234",
+      "IsEmployed": true,
+      "IsManager": false
+    },
+    {
+      "Id": 5,
+      "Name": "Dennis",
+      "Surname": "Rodman",
+      "Username": "denrod",
+      "Password": "1234",
+      "IsEmployed": false,
+      "IsManager": false
+    }
+  ],
+  "Tables": [
+    {
+      "TableNumber": 1,
+      "Seats": 4,
+      "IsFree": "true"
+    },
+    {
+      "TableNumber": 2,
+      "Seats": 4,
+      "IsFree": "true"
+    },
+    {
+      "TableNumber": 3,
+      "Seats": 4,
+      "IsFree": "true"
+    },
+    {
+      "TableNumber": 4,
+      "Seats": 4,
+      "IsFree": "true"
+    },
+    {
+      "TableNumber": 5,
+      "Seats": 4,
+      "IsFree": "true"
+    },
+    {
+      "TableNumber": 6,
+      "Seats": 10,
+      "IsFree": "true"
+    },
+    {
+      "TableNumber": 7,
+      "Seats": 10,
+      "IsFree": "true"
+    },
+    {
+      "TableNumber": 8,
+      "Seats": 10,
+      "IsFree": "true"
+    }
+  ],
+  "Order": [
+  ],
+  "Item": [
+    {
+      "Name": "Kebab",
+      "Price": 4.50,
+      "Description": "Agurkai, Lavašas, Pomidorai, Svogūnai, Mėsa, Pekino/švieži kopūstai",
+      "IsFood": true,
+      "IsDrink": false,
+      "IsAvailable": true
+    },
+    {
+      "Name": "Wrap",
+      "Price": 5.50,
+      "Description": "Lavašas, Pekino/švieži kopūstai, Traški vištiena, Marinuoti agurkai, Raudonieji svogūnai, Pomidorai",
+      "IsFood": true,
+      "IsDrink": false,
+      "IsAvailable": true
+    },
+    {
+      "Name": "Burger",
+      "Price": 7.50,
+      "Description": "Marinuoti agurkai, Burgerio bandelė su sezamais, Pomidorai, Raudonieji svogūnai, Rūkyta šoninė, Gouda sūris, Salotos, Angus brandintos jautienos paplotėlis, BBQ padažas, Čipotle padažas",
+      "IsFood": true,
+      "IsDrink": false,
+      "IsAvailable": true
+    },
+    {
+      "Name": "Pepsi",
+      "Price": 1.30,
+      "Description": "Pepsi",
+      "IsFood": false,
+      "IsDrink": true,
+      "IsAvailable": true
+    },
+    {
+      "Name": "Still water",
+      "Price": 1.20,
+      "Description": "Still water",
+      "IsFood": false,
+      "IsDrink": true,
+      "IsAvailable": true
+    }
+  ],
+  "BillCustomer": [
+    {
+    }
+  ],
+  "BillRestaurant": [
+    {
+    }
+  ]
 }
