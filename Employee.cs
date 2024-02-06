@@ -84,11 +84,16 @@ namespace Restaurant
                 return;
             }
 
-            if (newEmployeeName != null && newEmployeeSurname != null)
+            if (string.IsNullOrEmpty(newEmployeeName) && string.IsNullOrEmpty(newEmployeeSurname))
             {
                 var newEmployeeUsername = $"{newEmployeeName.Substring(0, 3)}{newEmployeeSurname.Substring(0, 3)}";
                 var newEmployeePassword = "1234";
                 testEmployees.Add(new Employee(testEmployees.Count + 1, newEmployeeName, newEmployeeSurname, newEmployeeUsername, newEmployeePassword, true, false));
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("\nSuccessfully added ");
+                Console.ResetColor();
+                Console.Write($"{newEmployeeName} {newEmployeeSurname} ({newEmployeeUsername})! ");
+                HelperMethods.ProceedIn(3);
             }
         }
         public static void RemoveEmployee(List<Employee> testEmployees)
@@ -106,7 +111,8 @@ namespace Restaurant
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write("\nSuccessfully removed ");
                     Console.ResetColor();
-                    Console.Write($"{employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})!");
+                    Console.Write($"{employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})! ");
+                    HelperMethods.ProceedIn(3);
                     break;
                 }
                 else if (input is "n" or "N")

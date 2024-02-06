@@ -13,15 +13,35 @@ namespace Restaurant
     }
     internal class Restaurant : IReturnWorkingHours
     {
+        public static string Name { get; set; }
+        private static List<Employee> Employees;
+        private static string defaultHourFrom = "10:00";
+        private static string defaultHourTo = "22:00";
+        public static List<string> WorkingHours =
+        [
+            $"Mon (from {defaultHourFrom} to {defaultHourTo})",
+            $"Tue (from {defaultHourFrom} to {defaultHourTo})",
+            $"Wed (from {defaultHourFrom} to {defaultHourTo})",
+            $"Thu (from {defaultHourFrom} to {defaultHourTo})",
+            $"Fri (from {defaultHourFrom} to {defaultHourTo})",
+            $"Sat (from {defaultHourFrom} to {defaultHourTo})",
+            $"Sun (day off)"
+        ];
+
+        public Restaurant(string name, List<Employee> employees)
+        {
+            Name = name;
+            Employees = employees;
+        }
         public static void SetWorkingHours()
         {
-            var optionSelected = -1; //edit with placeholders using default time
-            string defaultHourFrom = "10:00";
+            var optionSelected = -1;
             string newHourFrom = null;
-            string defaultHourTo = "22:00";
             string newHourTo = null;
 
-            List<string> menuOptions =
+            List<string> menuOptions = WorkingHours.ToList();
+
+            /*List<string> menuOptions =
             [
                 $"Mon (from {defaultHourFrom} to {defaultHourTo})",
                 $"Tue (from {defaultHourFrom} to {defaultHourTo})",
@@ -30,7 +50,7 @@ namespace Restaurant
                 $"Fri (from {defaultHourFrom} to {defaultHourTo})",
                 $"Sat (from {defaultHourFrom} to {defaultHourTo})",
                 $"Sun (day off)"
-            ];
+            ];*/
 
             optionSelected = HelperMethods.MenuInteraction(menuOptions);
 

@@ -20,7 +20,7 @@ namespace Restaurant
         {
             _cancellation = cts;
             breadCrumb.Add("Main menu");
-
+            
             var testEmployees = new List<Employee>
             {
                 new( 1, "Ned", "Flanders", "nedfla", "1234", true, true),
@@ -280,8 +280,8 @@ namespace Restaurant
                                 continue;
                             case 2:
                                 breadCrumb.Add("Item management");
-                                //ItemManagement();
-                                return;
+                                ItemManagement();
+                                continue;
                             case 3:
                                 breadCrumb.Add("Restaurant management");
                                 RestaurantManagement();
@@ -451,6 +451,58 @@ namespace Restaurant
                         breadCrumb.Add("Working hours");
                         Restaurant.SetWorkingHours();
                         breadCrumb.Remove("Working hours");
+                        continue;
+                }
+            }
+            while (optionSelected != 0);
+        }
+
+        private static void ItemManagement()
+        {
+            List<Item> items = new List<Item>
+            {
+                new Item("Kebab", (decimal)4.50, "Agurkai, Lavašas, Pomidorai, Svogūnai, Mėsa, Pekino/švieži kopūstai", true, false, true),
+                new Item("Wrap", (decimal)5.50, "Lavašas, Pekino/švieži kopūstai, Traški vištiena, Marinuoti agurkai, Raudonieji svogūnai, Pomidorai", true, false, true),
+                new Item("Burger", (decimal)7.50, "Marinuoti agurkai, Burgerio bandelė su sezamais, Pomidorai, Raudonieji svogūnai, Rūkyta šoninė, Gouda sūris, Salotos, Angus brandintos jautienos paplotėlis, BBQ padažas, Čipotle padažas", true, false, true),
+                new Item("Pepsi", (decimal)1.30, "Pepsi", false, true, true),
+                new Item("Still water", (decimal)1.20, "Still water", false, true, true)
+            };
+            var optionSelected = -1;
+
+            do
+            {
+                List<string> menuOptions =
+                [
+                    "0. Return",
+                    "1. List all items",
+                    "2. Add an item",
+                    "3. Remove an item",
+                    "4. Edit item info",
+                ];
+
+                optionSelected = MenuInteraction(menuOptions);
+
+                switch (optionSelected)
+                {
+                    case 0:
+                        breadCrumb.Remove("Item management");
+                        return;
+                    case 1:
+                        Item.ListAllItems(items);
+                        ReturnToMainMenu();
+                        continue;
+                    case 2:
+                        Item.AddItem(items);
+                        continue;
+                    case 3:
+                        breadCrumb.Add("Remove an item");
+                        Item.RemoveItem(items);
+                        breadCrumb.Remove("Remove an item");
+                        continue;
+                    case 4:
+                        breadCrumb.Add("Edit item info");
+                        Item.EditItemInfo(items);
+                        breadCrumb.Remove("Edit item info");
                         continue;
                 }
             }
