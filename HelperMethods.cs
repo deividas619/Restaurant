@@ -28,8 +28,8 @@ namespace Restaurant
 
             do
             {
-                List<string> menuOptions =
-                [
+                optionSelected = MenuInteraction(new List<string>
+                {
                     "0. Exit",
                     "1. Login",
                     "2. Check table availability",
@@ -37,8 +37,7 @@ namespace Restaurant
                     "4. Place an order",
                     "5. List on-going orders",
                     "6. Close order for a table"
-                ];
-                optionSelected = MenuInteraction(menuOptions);
+                });
 
                 switch (optionSelected)
                 {
@@ -73,12 +72,13 @@ namespace Restaurant
                         continue;
                 }
             }
-            while (optionSelected != 0);
+            //while (optionSelected != 0);
+            while (true);
         }
         public static void ProceedIn(int from)
         {
             Console.Write("Proceeding in: ");
-            for (var i = from; i >= 0; i--)
+            for (var i = from; i >= 1; i--)
             {
                 Console.Write(i);
                 Thread.Sleep(1000);
@@ -109,11 +109,7 @@ namespace Restaurant
         }
         public static int MenuInteraction(List<string> menuOptions)
         {
-            var coordinateBuffer = 3;
-            if (CurrentUser != null)
-            {
-                coordinateBuffer = 4;
-            }
+            var coordinateBuffer = CurrentUser != null ? 4 : 3;
             var option = 0;
             var selected = false;
             var cursorPositionColumn = 0;
@@ -214,19 +210,20 @@ namespace Restaurant
                     return;
                 }
 
-                if (Employees.FirstOrDefault(e => e.Username == username) != null)
+                //if (Employees.FirstOrDefault(e => e.Username == username) != null)
+                if (Employees.Any(e => e.Username == username))
                 {
                     var loggedInEmployee = Employees.FirstOrDefault(e => e.Username == username);
-                    if (loggedInEmployee.IsManager == true && loggedInEmployee.IsEmployed == true)
+                    if (loggedInEmployee.IsManager && loggedInEmployee.IsEmployed)
                     {
                         break;
                     }
-                    else if (loggedInEmployee.IsManager == true && loggedInEmployee.IsEmployed == false)
+                    else if (loggedInEmployee.IsManager && !loggedInEmployee.IsEmployed)
                     {
                         PrintError("User provided is a manager but the account has been disabled!");
                         continue;
                     }
-                    else if (loggedInEmployee.IsManager == false && loggedInEmployee.IsEmployed == true)
+                    else if (!loggedInEmployee.IsManager && loggedInEmployee.IsEmployed)
                     {
                         PrintError("User provided is not a manager!");
                         continue;
@@ -242,7 +239,7 @@ namespace Restaurant
             do
             {
                 Console.Write("Password: ");
-                if (GetUserEncryptedPassword() == Employees.FirstOrDefault(e => e.Username == username).Password)
+                if (GetUserEncryptedPassword() == Employees.First(e => e.Username == username).Password)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\nLogin successful!");
@@ -250,7 +247,7 @@ namespace Restaurant
                     //ProceedIn(3);
                     CurrentUser = username;
                     _keyPressed = false;
-                    if (Employees.FirstOrDefault(e => e.Username == username)?.IsManager == true)
+                    if (Employees.First(e => e.Username == username).IsManager == true)
                     {
                         //StartAutoLogoutTimer(_cancellation);
                     }
@@ -259,15 +256,13 @@ namespace Restaurant
 
                     do
                     {
-                        List<string> menuOptions =
-                        [
+                        optionSelected = MenuInteraction(new List<string>
+                        {
                             "0. Logout",
                             "1. Employee management",
                             "2. Item management",
                             "3. Restaurant management"
-                        ];
-
-                        optionSelected = MenuInteraction(menuOptions);
+                        });
 
                         switch (optionSelected)
                         {
@@ -322,8 +317,7 @@ namespace Restaurant
             CurrentUser = null;
             StopAutoLogoutTimer();
             breadCrumb.Remove("Manager menu");
-            return;
-            //InitMainMenu(_cancellation);
+            //return;
         }
         public static string GetUserEncryptedPassword()
         {
@@ -337,18 +331,10 @@ namespace Restaurant
                 }
                 else if (i.Key == ConsoleKey.Backspace)
                 {
-                    if (password == null)
-                    {
-                        continue;
-                    }
-                    else if (password.Length > 0)
+                    if (password != null && password.Length > 0)
                     {
                         password = password.Remove(password.Length - 1, 1);
                         Console.Write("\b \b");
-                    }
-                    else
-                    {
-                        continue;
                     }
                 }
                 else if (i.KeyChar != '\u0000')
@@ -389,16 +375,14 @@ namespace Restaurant
 
             do
             {
-                List<string> menuOptions =
-                [
+                optionSelected = MenuInteraction(new List<string>
+                {
                     "0. Return",
                     "1. List all employees",
                     "2. Add an employee",
                     "3. Remove an employee",
-                    "4. Edit employee info",
-                ];
-
-                optionSelected = MenuInteraction(menuOptions);
+                    "4. Edit employee info"
+                });
 
                 switch (optionSelected)
                 {
@@ -432,13 +416,11 @@ namespace Restaurant
 
             do
             {
-                List<string> menuOptions =
-                [
+                optionSelected = MenuInteraction(new List<string>
+                {
                     "0. Return",
                     "1. Edit restaurant working hours"
-                ];
-
-                optionSelected = MenuInteraction(menuOptions);
+                });
 
                 switch (optionSelected)
                 {
@@ -461,16 +443,14 @@ namespace Restaurant
 
             do
             {
-                List<string> menuOptions =
-                [
+                optionSelected = MenuInteraction(new List<string>
+                {
                     "0. Return",
                     "1. List all items",
                     "2. Add an item",
                     "3. Remove an item",
-                    "4. Edit item info",
-                ];
-
-                optionSelected = MenuInteraction(menuOptions);
+                    "4. Edit item info"
+                });
 
                 switch (optionSelected)
                 {

@@ -9,13 +9,13 @@ namespace Restaurant
     public class Bill
     {
         public int TableNumber { get; set; }
-        public List<Item> Items { get; set; }
+        public List<OrderItem> Items { get; set; } = new List<OrderItem>();
         public decimal TotalAmountForTable { get; set; }
 
-        //public Bill(int tableNumber, List<OrderItem> items, decimal totalAmountForTable)
-        public Bill(int tableNumber, decimal totalAmountForTable)
+        public Bill(int tableNumber, List<OrderItem> items, decimal totalAmountForTable)
         {
             TableNumber = tableNumber;
+            Items = items;
             TotalAmountForTable = totalAmountForTable;
         }
     }

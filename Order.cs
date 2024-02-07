@@ -16,7 +16,6 @@ namespace Restaurant
     {
         static void SendEmail(string customerBill, string emailAddress)
         {
-
         }
     }
     public class OrderItem
@@ -35,7 +34,7 @@ namespace Restaurant
         public int OrderID { get; private set; }
         public List<OrderItem> Items { get; set; } = new List<OrderItem>();
         public Table Table { get; set; }
-        private int AverageTimePerOrder { get; set; } = 5;
+        private int AverageTimePerOrder { get; set; } = 10;
         private string OrderStatus { get; set; } = "Ongoing";
         public DateTime EstimatedFinishTime { get; private set; }
         private static int _nextOrderId = 1;
@@ -92,7 +91,6 @@ namespace Restaurant
                 Program.UpdateDatabase(Program.database);
                 table.IsFree = false;
                 _ = order.MealPreparationAsync();
-                HelperMethods.ProceedIn(3);
                 return;
             }
             else
@@ -111,7 +109,6 @@ namespace Restaurant
             if (Items.Any(i => i.Item.IsFood == true))
             {
                 orderTime = AverageTimePerOrder;
-                
             }
             this.EstimatedFinishTime = DateTime.Now.AddMinutes(orderTime);
             await Task.Delay(TimeSpan.FromSeconds(60));
@@ -140,17 +137,17 @@ namespace Restaurant
         }
         public static void CloseTable(List<Table> tables, List<string> breadCrumb)
         {
-            /*Table.CheckTableAvailability();
+            Table.CheckTableAvailability();
             Console.Write("Which table placed an order (1-8): ");
             int.TryParse(Console.ReadLine(), out int tableNumber);
             var table = tables.FirstOrDefault(t => t.TableNumber == tableNumber);
             decimal totalAmountForTable = 0;
+            List<Order> ordersForTable = Order.CombineOrdersForTable(table.TableNumber);
 
             if (table != null)
             {
                 if (!table.IsFree)
                 {
-                    List<Order> ordersForTable = Order.CombineOrdersForTable(table.TableNumber);
                     foreach (var order in ordersForTable)
                     {
                         totalAmountForTable += order.CalculateTotalAmount();
@@ -160,104 +157,109 @@ namespace Restaurant
                 else
                 {
                     HelperMethods.PrintError($"Table {table.TableNumber} doesn't have active orders!");
+                    HelperMethods.ReturnToMainMenu();
+                    return;
                 }
             }
             else
             {
                 HelperMethods.PrintError($"Table {tableNumber} not found!");
                 HelperMethods.ReturnToMainMenu();
-            }*/
+            }
 
-            //List<OrderItem> items = Program.database.Order.SelectMany(i => i.Items).Where(o => o.OrderStatus == "Completed").Where(o => o.Table.TableNumber == tableNumber);
+            List<OrderItem> items = Program.database.Order.Where(o => o.Table.TableNumber == tableNumber).SelectMany(i => i.Items).ToList();
             breadCrumb.Add("Generate bill");
-            //GenerateBill(tableNumber, items, totalAmountForTable);
-            SendEmail("some text", "dsce@danskebank.lt"); //remove
+            GenerateBill(tableNumber, items, totalAmountForTable);
             breadCrumb.Remove("Generate bill");
-            //table.IsFree = true;
-            HelperMethods.ReturnToMainMenu();
+            table.IsFree = true;
         }
         public decimal CalculateTotalAmount()
         {
-            decimal totalAmount = 0;
-            foreach (var orderItem in Items)
-            {
-                totalAmount += orderItem.Item.Price * orderItem.Amount;
-            }
-            return totalAmount;
+            return Items.Sum(orderItem => orderItem.Item.Price * orderItem.Amount);
         }
         public static List<Order> CombineOrdersForTable(int tableNumber)
         {
-            List<Order> ordersForTable = Program.database.Order.Where(order => order.Table.TableNumber == tableNumber).ToList();
-            return ordersForTable;
+            return Program.database.Order.Where(order => order.Table.TableNumber == tableNumber).ToList();
         }
         public static void GenerateBill(int tableNumber, List<OrderItem> items, decimal totalAmountForTable)
         {
-            /*Bill Bill = new Bill(tableNumber, items, totalAmountForTable);
+            Bill bill = new Bill(tableNumber, items, totalAmountForTable);
+            int totalAmountLength = bill.TotalAmountForTable.ToString().Length;
             string restaurantBill = $@"
-|---------------------------------|
-|  Date: {DateTime.Now}           |
-|                                 |
-|  Table: {tableNumber}           |
-|  Items: {items.ForEach(Console.WriteLine())}|
-|                                 |
-|                                 |
-|                                 |
-|                                 |
-|  Total amount: {totalAmountForTable}|
-|            ¯\_(ツ)_/¯           |
-|---------------------------------|
-
+|-------------------------------------|
+|  Date: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}
+|
+|  Table: {bill.TableNumber}
+|  Items:
+{string.Join(Environment.NewLine, bill.Items.Select(item => $"|  - ({item.Amount}) {Truncate(item.Item.Name, 15)}"))}
+|
+|
+|
+|  Total amount: {bill.TotalAmountForTable + "€"}{new string(' ', 25 - totalAmountLength)}
+|            ¯\_(ツ)_/¯
+|-------------------------------------|
 ";
 
             string customerBill = $@"
-|---------------------------------|
-|  Date: {DateTime.Now}           |
-|                                 |
-|  Table: {tableNumber}           |
-|  Items: {items.ForEach(Console.WriteLine())}|
-|                                 |
-|                                 |
-|                                 |
-|                                 |
-|  Total amount: {totalAmountForTable}|
-|---------------------------------|
-
+|-------------------------------------|
+|  Date: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}
+|
+|  Table: {bill.TableNumber}
+|  Items:
+{string.Join(Environment.NewLine, bill.Items.Select(item => $"|  - ({item.Amount}) {Truncate(item.Item.Name, 15)}"))}
+|
+|
+|
+|  Total amount: {bill.TotalAmountForTable + "€"}{new string(' ', 25 - totalAmountLength)}
+|-------------------------------------|
 ";
-            Console.WriteLine("##### // RESTAURANT BILL \\ ########## // CUSTOMER BILL \\ #####");
-            foreach (var lineInCustomerBill in customerBill)
+            Console.WriteLine("\n######## // RESTAURANT BILL \\\\ ########");
+            Console.WriteLine(restaurantBill);
+            Console.WriteLine("#######################################");
+            do
             {
-                foreach (var lineInRestaurantBill in restaurantBill)
+                Console.Write("\nPrint customer bill? (y/N): ");
+                var input = Console.ReadLine();
+                if (input.ToUpper() == "Y")
                 {
-                    Console.Write($"{lineInRestaurantBill}   ");
+                    Console.WriteLine("\n######### // CUSTOMER BILL \\\\ #########");
+                    Console.WriteLine(customerBill);
+                    Console.WriteLine("#######################################");
                     break;
                 }
-
-                Console.Write($"{lineInCustomerBill}\n");
+                else if (input.ToUpper() == "N")
+                {
+                    break;
+                }
+                else
+                {
+                    HelperMethods.PrintError("Incorrect input!");
+                }
             }
+            while (true);
+            
 
-            Console.WriteLine("########################################################################################################");
-            Console.WriteLine("Printing both bills...");
+            Console.WriteLine("\nPrinting bill for restaurant...");
             Console.WriteLine("Saving restaurant bill to Bills.txt");
-            File.AppendAllText(@"Bills.txt", restaurantBill);*/
+            File.AppendAllText(@"Bills.txt", restaurantBill);
 
             do
             {
-                Console.Write("Send customer bill to their email? (y/N): ");
+                Console.Write("\nSend customer bill to their email? (y/N): ");
                 var input = Console.ReadLine();
                 if (input.ToUpper() == "Y")
                 {
                     Console.Write("Email: ");
                     var emailAddress = Console.ReadLine();
-                    Console.Write($"Send it to {emailAddress}? (y/N): ");
+                    Console.Write($"\nSend customer bill to {emailAddress}? (y/N): ");
                     input = Console.ReadLine();
                     if (input.ToUpper() == "Y")
                     {
-                        //SendEmail(customerBill, emailAddress);
-                        SendEmail("some text", emailAddress);
+                        SendEmail(customerBill, emailAddress);
+                        return;
                     }
                     else if (input.ToUpper() == "N")
                     {
-                        HelperMethods.ProceedIn(3);
                         break;
                     }
                     else
@@ -268,7 +270,6 @@ namespace Restaurant
                 }
                 else if (input.ToUpper() == "N")
                 {
-                    HelperMethods.ProceedIn(3);
                     break;
                 }
                 else
@@ -277,29 +278,27 @@ namespace Restaurant
                 }
             }
             while (true);
-            return;
         }
         public static void SendEmail(string customerBill, string emailAddress)
         {
-            emailAddress = "dscep93@gmail.com";
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("Restaurant mailing system", "dscep93@gmail.com"));
             message.To.Add(new MailboxAddress("", emailAddress));
             message.Subject = "Restaurant bill";
-            //message.Body = new TextPart("plain") { Text = customerBill };
-            message.Body = new TextPart("plain") { Text = "some text" };
+            message.Body = new TextPart("plain") { Text = customerBill };
             Console.WriteLine($"\nSending the bill to {emailAddress}");
             try
             {
                 using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
                     client.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                    client.Authenticate("dscep93@gmail.com", "mraabfqiwapjvukm");
+                    client.Authenticate("dscep93@gmail.com", Program.pw);
                     client.Send(message);
                     client.Disconnect(true);
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\nMail sent successfully!");
+                    Console.WriteLine("Mail sent successfully!");
                     Console.ResetColor();
+                    HelperMethods.ReturnToMainMenu();
                     return;
                 }
             }
@@ -309,9 +308,12 @@ namespace Restaurant
                 Console.WriteLine("\nMail sending failed!");
                 Console.ResetColor();
                 Console.WriteLine(e.Message);
-                throw;
-                return;
+                HelperMethods.ReturnToMainMenu();
             }
+        }
+        private static string Truncate(string value, int maxLength)
+        {
+            return value.Length <= maxLength ? value : value.Substring(0, maxLength - 3) + "...";
         }
     }
 }

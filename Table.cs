@@ -72,6 +72,7 @@ namespace Restaurant
         public static void MakeTableReservation()
         {
             CheckTableAvailability();
+
             do
             {
                 Console.Write("\nWhich table to reserve (1-8): ");
@@ -99,10 +100,6 @@ namespace Restaurant
                     else if (table != null && !table.IsFree)
                     {
                         HelperMethods.PrintError($"Table {tableNumber} is already reserved!");
-                    }
-                    else
-                    {
-                        HelperMethods.PrintError($"Table {tableNumber} not found!");
                     }
                 }
                 else

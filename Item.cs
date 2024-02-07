@@ -92,7 +92,7 @@ namespace Restaurant
 
                 bool newItemDrink = false;
                 bool newItemFood = false;
-                if (!string.IsNullOrEmpty(newItemName) && newItemPrice != null)
+                if (!string.IsNullOrEmpty(newItemName) && newItemPrice != 0)
                 {
                     if (newItemIsDrink is "y" or "Y" ? newItemDrink = true : newItemDrink = false);
                     if (newItemIsFood is "y" or "Y" ? newItemFood = true : newItemFood = false);
@@ -130,9 +130,9 @@ namespace Restaurant
             var itemToRemove = Items.FirstOrDefault(i => i == Items[optionSelected]);
             while (true)
             {
-                Console.Write($"Remove {itemToRemove.Name}? (y/N): ");
+                Console.Write($"\nRemove {itemToRemove.Name}? (y/N): ");
                 var input = Console.ReadLine();
-                if (input is "y" or "Y")
+                if (input.ToUpper() == "Y")
                 {
                     itemToRemove.IsAvailable = false;
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -164,32 +164,35 @@ namespace Restaurant
                 var input = Console.ReadLine();
                 if (input is "y" or "Y")
                 {
-                    List<string> menuOptions =
-                    [
+                    optionSelected = HelperMethods.MenuInteraction(new List<string>
+                    {
                         "0. Return",
                         "1. Name",
                         "2. Price",
                         "3. Description",
                         "4. Availability"
-                    ];
-                    optionSelected = HelperMethods.MenuInteraction(menuOptions);
+                    });
+
                     switch (optionSelected)
                     {
                         case 0:
                             return;
                         case 1:
+                            Console.Write($"\nCurrent name: {itemToEdit.Name}");
                             Console.Write("\nNew item name: ");
                             string newName = Console.ReadLine();
                             itemToEdit.Name = newName;
                             Program.UpdateDatabase(Program.database);
                             return;
                         case 2:
+                            Console.Write($"\nCurrent price: {itemToEdit.Price}");
                             Console.Write("\nNew item price: ");
                             decimal.TryParse(Console.ReadLine(), out var newPrice);
                             itemToEdit.Price = newPrice;
                             Program.UpdateDatabase(Program.database);
                             return;
                         case 3:
+                            Console.Write($"\nCurrent description: {itemToEdit.Description}");
                             Console.Write("\nNew item description: ");
                             string newDescription = Console.ReadLine();
                             itemToEdit.Description = newDescription;

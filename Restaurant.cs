@@ -89,10 +89,12 @@ namespace Restaurant
             }
 
             menuOptions[optionSelected] = menuOptions[optionSelected].Replace(defaultHourFrom, newHourFrom).Replace(defaultHourTo, newHourTo);
+            WorkingHours = menuOptions;
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("Successfully edited to: ");
+            Console.Write("\nSuccessfully edited to: ");
             Console.ResetColor();
             Console.Write(menuOptions[optionSelected]);
+            HelperMethods.ReturnToMainMenu();
         }
     }
 }

@@ -85,7 +85,7 @@ namespace Restaurant
 
             if (!string.IsNullOrEmpty(newEmployeeName) && !string.IsNullOrEmpty(newEmployeeSurname))
             {
-                var newEmployeeUsername = $"{newEmployeeName.Substring(0, 3)}{newEmployeeSurname.Substring(0, 3)}";
+                string newEmployeeUsername = $"{newEmployeeName.Substring(0, Math.Min(3, newEmployeeName.Length))}{newEmployeeSurname.Substring(0, Math.Min(3, newEmployeeSurname.Length))}";
                 var newEmployeePassword = "1234";
                 Employees.Add(new Employee(Employees.Count + 1, newEmployeeName, newEmployeeSurname, newEmployeeUsername, newEmployeePassword, true, false));
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -93,37 +93,50 @@ namespace Restaurant
                 Console.ResetColor();
                 Console.Write($"{newEmployeeName} {newEmployeeSurname} ({newEmployeeUsername})! ");
                 Program.UpdateDatabase(Program.database);
-                HelperMethods.ProceedIn(3);
+                HelperMethods.ReturnToMainMenu();
+            }
+            else
+            {
+                HelperMethods.PrintError("Some fields were left blank!");
+                HelperMethods.ReturnToMainMenu();
             }
         }
         public static void RemoveEmployee(List<Employee> Employees)
         {
-            List<string> employeesToRemove = Employees.Where(e => e.IsEmployed == true).Where(e => e.IsManager == false).Select(e => $"{e.Name} {e.Surname}").ToList();
-            var optionSelected = HelperMethods.MenuInteraction(employeesToRemove);
-            var employeeToRemove = Employees.FirstOrDefault(e => $"{e.Name} {e.Surname}" == employeesToRemove[optionSelected]);
-            while (true)
+            List<string> employeesToRemove = Employees.Where(e => e.IsEmployed && !e.IsManager).Select(e => $"{e.Name} {e.Surname}").ToList();
+            if (employeesToRemove.Count > 0)
             {
-                Console.Write($"Remove {employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})? (y/N): ");
-                var input = Console.ReadLine();
-                if (input is "y" or "Y")
+                var optionSelected = HelperMethods.MenuInteraction(employeesToRemove);
+                var employeeToRemove = Employees.FirstOrDefault(e => $"{e.Name} {e.Surname}" == employeesToRemove[optionSelected]);
+                while (true)
                 {
-                    employeeToRemove.IsEmployed = false;
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write("\nSuccessfully removed ");
-                    Console.ResetColor();
-                    Console.Write($"{employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})! ");
-                    Program.UpdateDatabase(Program.database);
-                    HelperMethods.ProceedIn(3);
-                    break;
+                    Console.Write($"\nRemove {employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})? (y/N): ");
+                    var input = Console.ReadLine();
+                    if (input is "y" or "Y")
+                    {
+                        employeeToRemove.IsEmployed = false;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write("\nSuccessfully removed ");
+                        Console.ResetColor();
+                        Console.Write($"{employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})! ");
+                        Program.UpdateDatabase(Program.database);
+                        HelperMethods.ProceedIn(3);
+                        break;
+                    }
+                    else if (input is "n" or "N")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        HelperMethods.PrintError("Incorrect selection!");
+                    }
                 }
-                else if (input is "n" or "N")
-                {
-                    break;
-                }
-                else
-                {
-                    HelperMethods.PrintError("Incorrect selection!");
-                }
+            }
+            else
+            {
+                HelperMethods.PrintError("No employees found to remove!");
+                HelperMethods.ReturnToMainMenu();
             }
         }
         public static void EditEmployeeInfo(List<Employee> Employees)
@@ -137,8 +150,8 @@ namespace Restaurant
                 var input = Console.ReadLine();
                 if (input is "y" or "Y")
                 {
-                    List<string> menuOptions =
-                    [
+                    optionSelected = HelperMethods.MenuInteraction(new List<string>
+                    {
                         "0. Return",
                         "1. Name",
                         "2. Surname",
@@ -146,8 +159,8 @@ namespace Restaurant
                         "4. Password",
                         "5. Employment status",
                         "6. Management status"
-                    ];
-                    optionSelected = HelperMethods.MenuInteraction(menuOptions);
+                    });
+
                     switch (optionSelected)
                     {
                         case 0:
@@ -186,7 +199,7 @@ namespace Restaurant
                             }
                             else if (input is "n" or "N")
                             {
-                                continue;
+                                return;
                             }
                             else
                             {
@@ -210,7 +223,7 @@ namespace Restaurant
                             }
                             else if (input is "n" or "N")
                             {
-                                continue;
+                                return;
                             }
                             else
                             {
