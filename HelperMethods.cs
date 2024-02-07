@@ -36,7 +36,7 @@ namespace Restaurant
                     "3. Make table reservation",
                     "4. Place an order",
                     "5. List on-going orders",
-                    "6. Close an order"
+                    "6. Close order for a table"
                 ];
                 optionSelected = MenuInteraction(menuOptions);
 
@@ -67,7 +67,9 @@ namespace Restaurant
                         Order.ListOngoingOrders();
                         continue;
                     case 6:
-                        Order.CloseTable(Tables);
+                        breadCrumb.Add("Close an order");
+                        Order.CloseTable(Tables, breadCrumb);
+                        breadCrumb.Remove("Close an order");
                         continue;
                 }
             }
