@@ -13,6 +13,5 @@ namespace Restaurant
         public List<Table> Tables { get; set; }
         public List<Order> Order { get; set; }
         public List<Item> Item { get; set; }
-        public List<Bill> Bill { get; set; }
     }
 }

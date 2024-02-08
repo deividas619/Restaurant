@@ -10,7 +10,7 @@ namespace Restaurant
     public class Table
     {
         public int TableNumber;
-        public int Seats;
+        //public int Seats;
         public bool IsFree = true;
 
         public static void CheckTableAvailability()
@@ -87,17 +87,18 @@ namespace Restaurant
                 if (int.TryParse(input, out var tableNumber))
                 {
                     var table = Program.database.Tables.FirstOrDefault(t => t.TableNumber == tableNumber);
-                    if (table != null && table.IsFree)
+                    if (table is { IsFree: true })
                     {
                         table.IsFree = false;
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"Table {tableNumber} reserved successfully!");
                         Console.ResetColor();
                         Program.UpdateDatabase(Program.database);
-                        HelperMethods.ProceedIn(3);
+                        //HelperMethods.ProceedIn(3);
+                        HelperMethods.ReturnToMainMenu();
                         break;
                     }
-                    else if (table != null && !table.IsFree)
+                    else if (table is { IsFree: false })
                     {
                         HelperMethods.PrintError($"Table {tableNumber} is already reserved!");
                     }

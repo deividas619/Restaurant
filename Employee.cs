@@ -13,8 +13,8 @@ namespace Restaurant
         public string Surname { get; private set; }
         public string Username { get; private set; }
         public string Password { get; private set; }
-        public bool IsEmployed { get; private set; } = true;
-        public bool IsManager { get; private set; } = false;
+        public bool IsEmployed { get; private set; }
+        public bool IsManager { get; private set; }
 
         public Employee(int id, string name, string surname, string username, string password, bool isEmployed, bool isManager)
         {
@@ -32,7 +32,7 @@ namespace Restaurant
             foreach (var employee in Employees)
             {
                 Console.WriteLine($"{employee.Id}. {employee.Name} {employee.Surname} ({employee.Username})");
-                Console.Write($"   Works: ");
+                Console.Write("   Works: ");
                 if (employee.IsEmployed)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -45,7 +45,7 @@ namespace Restaurant
                     Console.Write("no\n");
                     Console.ResetColor();
                 }
-                Console.Write($"   Manages: ");
+                Console.Write("   Manages: ");
                 if (employee.IsManager)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -103,7 +103,7 @@ namespace Restaurant
         }
         public static void RemoveEmployee(List<Employee> Employees)
         {
-            List<string> employeesToRemove = Employees.Where(e => e.IsEmployed && !e.IsManager).Select(e => $"{e.Name} {e.Surname}").ToList();
+            List<string> employeesToRemove = Employees.Where(e => e is { IsEmployed: true, IsManager: false }).Select(e => $"{e.Name} {e.Surname}").ToList();
             if (employeesToRemove.Count > 0)
             {
                 var optionSelected = HelperMethods.MenuInteraction(employeesToRemove);
@@ -120,7 +120,7 @@ namespace Restaurant
                         Console.ResetColor();
                         Console.Write($"{employeeToRemove.Name} {employeeToRemove.Surname} ({employeeToRemove.Username})! ");
                         Program.UpdateDatabase(Program.database);
-                        HelperMethods.ProceedIn(3);
+                        HelperMethods.ReturnToMainMenu();
                         break;
                     }
                     else if (input is "n" or "N")
@@ -135,7 +135,7 @@ namespace Restaurant
             }
             else
             {
-                HelperMethods.PrintError("No employees found to remove!");
+                HelperMethods.PrintError("\nNo employees found to remove!");
                 HelperMethods.ReturnToMainMenu();
             }
         }
@@ -150,8 +150,8 @@ namespace Restaurant
                 var input = Console.ReadLine();
                 if (input is "y" or "Y")
                 {
-                    optionSelected = HelperMethods.MenuInteraction(new List<string>
-                    {
+                    optionSelected = HelperMethods.MenuInteraction(
+                    [
                         "0. Return",
                         "1. Name",
                         "2. Surname",
@@ -159,7 +159,7 @@ namespace Restaurant
                         "4. Password",
                         "5. Employment status",
                         "6. Management status"
-                    });
+                    ]);
 
                     switch (optionSelected)
                     {

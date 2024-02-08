@@ -10,7 +10,7 @@ namespace Restaurant
     internal class Program
     {
         public static string pw = ReturnPW();
-        public static RestaurantData database = JsonConvert.DeserializeObject<RestaurantData>(File.ReadAllText(@"Database.json"));
+        public static RestaurantData database = JsonConvert.DeserializeObject<RestaurantData>(File.ReadAllText("Database.json"));
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -40,6 +40,6 @@ namespace Restaurant
  * TO-DO
  * object Restaurant doesn't have property for working hours
  * cancel operation if ctrl + c sometimes is cancelling only from 2nd input
- * cancellation token messes up other inputs
+ * cancellation token messes up other inputs like providing username for login
  * fix auto logout timer when manager is logged in
 */

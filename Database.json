@@ -131,13 +131,5 @@
       "IsDrink": true,
       "IsAvailable": true
     }
-  ],
-  "BillCustomer": [
-    {
-    }
-  ],
-  "BillRestaurant": [
-    {
-    }
   ]
 }

@@ -12,24 +12,22 @@ namespace Restaurant
     internal class HelperMethods
     {
         public static CancellationTokenSource _cancellation;
-        public static List<string> breadCrumb = new List<string>();
+        public static List<string> BreadCrumb = new List<string>();
         public static string CurrentUser = null!;
         private static Timer _autoLogout;
-        private static bool _keyPressed = false;
+        private static bool _keyPressed;
         
         public static void InitMainMenu(CancellationTokenSource cts)
         {
             _cancellation = cts;
-            breadCrumb.Add("Main menu");
+            BreadCrumb.Add("Main menu");
             
             var Tables = Program.database.Tables;
             var Items = Program.database.Item;
-            var optionSelected = -1;
 
             do
             {
-                optionSelected = MenuInteraction(new List<string>
-                {
+                var optionSelected = MenuInteraction([
                     "0. Exit",
                     "1. Login",
                     "2. Check table availability",
@@ -37,7 +35,7 @@ namespace Restaurant
                     "4. Place an order",
                     "5. List on-going orders",
                     "6. Close order for a table"
-                });
+                ]);
 
                 switch (optionSelected)
                 {
@@ -53,26 +51,25 @@ namespace Restaurant
                         ReturnToMainMenu();
                         continue;
                     case 3:
-                        breadCrumb.Add("Table reservation");
+                        BreadCrumb.Add("Table reservation");
                         Table.MakeTableReservation();
-                        breadCrumb.Remove("Table reservation");
+                        BreadCrumb.Remove("Table reservation");
                         continue;
                     case 4:
-                        breadCrumb.Add("Place an order");
+                        BreadCrumb.Add("Place an order");
                         Order.PlaceOrder(Tables, Items);
-                        breadCrumb.Remove("Place an order");
+                        BreadCrumb.Remove("Place an order");
                         continue;
                     case 5:
                         Order.ListOngoingOrders();
                         continue;
                     case 6:
-                        breadCrumb.Add("Close an order");
-                        Order.CloseTable(Tables, breadCrumb);
-                        breadCrumb.Remove("Close an order");
+                        BreadCrumb.Add("Close an order");
+                        Order.CloseTable(Tables, BreadCrumb);
+                        BreadCrumb.Remove("Close an order");
                         continue;
                 }
             }
-            //while (optionSelected != 0);
             while (true);
         }
         public static void ProceedIn(int from)
@@ -89,21 +86,21 @@ namespace Restaurant
         private static void PrintWelcomeScreen()
         {
             Console.WriteLine("####################");
-            Console.WriteLine($"# Welcome to JAMMY #");
+            Console.WriteLine("# Welcome to JAMMY #");
             Console.WriteLine("####################");
             if (CurrentUser != null)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write($"Logged in as: ");
+                Console.Write("Logged in as: ");
                 Console.ResetColor();
                 Console.Write(CurrentUser + "\n");
             }
 
             
-            if (breadCrumb.Count > 0)
+            if (BreadCrumb.Count > 0)
             {
                 Console.WriteLine("");
-                Console.Write(string.Join(" => ", breadCrumb));
+                Console.Write(string.Join(" => ", BreadCrumb));
                 Console.WriteLine("\n");
             }
         }
@@ -218,12 +215,12 @@ namespace Restaurant
                     {
                         break;
                     }
-                    else if (loggedInEmployee.IsManager && !loggedInEmployee.IsEmployed)
+                    else if (loggedInEmployee is { IsManager: true, IsEmployed: false })
                     {
                         PrintError("User provided is a manager but the account has been disabled!");
                         continue;
                     }
-                    else if (!loggedInEmployee.IsManager && loggedInEmployee.IsEmployed)
+                    else if (loggedInEmployee is { IsManager: false, IsEmployed: true })
                     {
                         PrintError("User provided is not a manager!");
                         continue;
@@ -244,7 +241,7 @@ namespace Restaurant
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\nLogin successful!");
                     Console.ResetColor();
-                    //ProceedIn(3);
+                    ProceedIn(3);
                     CurrentUser = username;
                     _keyPressed = false;
                     if (Employees.First(e => e.Username == username).IsManager == true)
@@ -252,17 +249,16 @@ namespace Restaurant
                         //StartAutoLogoutTimer(_cancellation);
                     }
                     var optionSelected = -1;
-                    breadCrumb.Add("Manager menu");
+                    BreadCrumb.Add("Manager menu");
 
                     do
                     {
-                        optionSelected = MenuInteraction(new List<string>
-                        {
+                        optionSelected = MenuInteraction([
                             "0. Logout",
                             "1. Employee management",
                             "2. Item management",
                             "3. Restaurant management"
-                        });
+                        ]);
 
                         switch (optionSelected)
                         {
@@ -272,15 +268,15 @@ namespace Restaurant
                                 ProceedIn(3);
                                 return;
                             case 1:
-                                breadCrumb.Add("Employee management");
+                                BreadCrumb.Add("Employee management");
                                 EmployeeManagement();
                                 continue;
                             case 2:
-                                breadCrumb.Add("Item management");
+                                BreadCrumb.Add("Item management");
                                 ItemManagement();
                                 continue;
                             case 3:
-                                breadCrumb.Add("Restaurant management");
+                                BreadCrumb.Add("Restaurant management");
                                 RestaurantManagement();
                                 continue;
                         }
@@ -316,7 +312,7 @@ namespace Restaurant
         {
             CurrentUser = null;
             StopAutoLogoutTimer();
-            breadCrumb.Remove("Manager menu");
+            BreadCrumb.Remove("Manager menu");
             //return;
         }
         public static string GetUserEncryptedPassword()
@@ -331,7 +327,7 @@ namespace Restaurant
                 }
                 else if (i.Key == ConsoleKey.Backspace)
                 {
-                    if (password != null && password.Length > 0)
+                    if (password is { Length: > 0 })
                     {
                         password = password.Remove(password.Length - 1, 1);
                         Console.Write("\b \b");
@@ -375,19 +371,18 @@ namespace Restaurant
 
             do
             {
-                optionSelected = MenuInteraction(new List<string>
-                {
+                optionSelected = MenuInteraction([
                     "0. Return",
                     "1. List all employees",
                     "2. Add an employee",
                     "3. Remove an employee",
                     "4. Edit employee info"
-                });
+                ]);
 
                 switch (optionSelected)
                 {
                     case 0:
-                        breadCrumb.Remove("Employee management");
+                        BreadCrumb.Remove("Employee management");
                         return;
                     case 1:
                         Employee.ListAllEmployees(Employees);
@@ -397,14 +392,14 @@ namespace Restaurant
                         Employee.AddEmployee(Employees);
                         continue;
                     case 3:
-                        breadCrumb.Add("Remove an employee");
+                        BreadCrumb.Add("Remove an employee");
                         Employee.RemoveEmployee(Employees);
-                        breadCrumb.Remove("Remove an employee");
+                        BreadCrumb.Remove("Remove an employee");
                         continue;
                     case 4:
-                        breadCrumb.Add("Edit employee info");
+                        BreadCrumb.Add("Edit employee info");
                         Employee.EditEmployeeInfo(Employees);
-                        breadCrumb.Remove("Edit employee info");
+                        BreadCrumb.Remove("Edit employee info");
                         continue;
                 }
             }
@@ -416,21 +411,20 @@ namespace Restaurant
 
             do
             {
-                optionSelected = MenuInteraction(new List<string>
-                {
+                optionSelected = MenuInteraction([
                     "0. Return",
                     "1. Edit restaurant working hours"
-                });
+                ]);
 
                 switch (optionSelected)
                 {
                     case 0:
-                        breadCrumb.Remove("Restaurant management");
+                        BreadCrumb.Remove("Restaurant management");
                         continue;
                     case 1:
-                        breadCrumb.Add("Working hours");
+                        BreadCrumb.Add("Working hours");
                         Restaurant.SetWorkingHours();
-                        breadCrumb.Remove("Working hours");
+                        BreadCrumb.Remove("Working hours");
                         continue;
                 }
             }
@@ -443,19 +437,18 @@ namespace Restaurant
 
             do
             {
-                optionSelected = MenuInteraction(new List<string>
-                {
+                optionSelected = MenuInteraction([
                     "0. Return",
                     "1. List all items",
                     "2. Add an item",
                     "3. Remove an item",
                     "4. Edit item info"
-                });
+                ]);
 
                 switch (optionSelected)
                 {
                     case 0:
-                        breadCrumb.Remove("Item management");
+                        BreadCrumb.Remove("Item management");
                         return;
                     case 1:
                         Item.ListAllItems(Items);
@@ -465,14 +458,14 @@ namespace Restaurant
                         Item.AddItem(Items);
                         continue;
                     case 3:
-                        breadCrumb.Add("Remove an item");
+                        BreadCrumb.Add("Remove an item");
                         Item.RemoveItem(Items);
-                        breadCrumb.Remove("Remove an item");
+                        BreadCrumb.Remove("Remove an item");
                         continue;
                     case 4:
-                        breadCrumb.Add("Edit item info");
+                        BreadCrumb.Add("Edit item info");
                         Item.EditItemInfo(Items);
-                        breadCrumb.Remove("Edit item info");
+                        BreadCrumb.Remove("Edit item info");
                         continue;
                 }
             }

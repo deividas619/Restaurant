@@ -25,7 +25,7 @@ namespace Restaurant
             $"Thu (from {defaultHourFrom} to {defaultHourTo})",
             $"Fri (from {defaultHourFrom} to {defaultHourTo})",
             $"Sat (from {defaultHourFrom} to {defaultHourTo})",
-            $"Sun (day off)"
+            "Sun (day off)"
         ];
 
         public Restaurant(string name, List<Employee> employees)
@@ -56,7 +56,7 @@ namespace Restaurant
                     return;
                 }
 
-                if (Regex.IsMatch(newHourFrom, @"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"))
+                if (Regex.IsMatch(newHourFrom, "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"))
                 {
                     break;
                 }
@@ -78,7 +78,7 @@ namespace Restaurant
                     return;
                 }
 
-                if (Regex.IsMatch(newHourTo, @"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"))
+                if (Regex.IsMatch(newHourTo, "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"))
                 {
                     break;
                 }

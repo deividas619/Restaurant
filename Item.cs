@@ -90,10 +90,10 @@ namespace Restaurant
                     return;
                 }
 
-                bool newItemDrink = false;
-                bool newItemFood = false;
                 if (!string.IsNullOrEmpty(newItemName) && newItemPrice != 0)
                 {
+                    var newItemDrink = false;
+                    var newItemFood = false;
                     if (newItemIsDrink is "y" or "Y" ? newItemDrink = true : newItemDrink = false);
                     if (newItemIsFood is "y" or "Y" ? newItemFood = true : newItemFood = false);
                     if (!newItemDrink && !newItemFood)
@@ -112,7 +112,8 @@ namespace Restaurant
                         Console.ResetColor();
                         Console.Write($"{newItemName} ({newItemPrice}€)! ");
                         Program.UpdateDatabase(Program.database);
-                        HelperMethods.ProceedIn(3);
+                        //HelperMethods.ProceedIn(3);
+                        HelperMethods.ReturnToMainMenu();
                         break;
                     }
                 }
@@ -140,7 +141,8 @@ namespace Restaurant
                     Console.ResetColor();
                     Console.Write($"{itemToRemove.Name} ");
                     Program.UpdateDatabase(Program.database);
-                    HelperMethods.ProceedIn(3);
+                    //HelperMethods.ProceedIn(3);
+                    HelperMethods.ReturnToMainMenu();
                     break;
                 }
                 else if (input is "n" or "N")
@@ -164,14 +166,13 @@ namespace Restaurant
                 var input = Console.ReadLine();
                 if (input is "y" or "Y")
                 {
-                    optionSelected = HelperMethods.MenuInteraction(new List<string>
-                    {
+                    optionSelected = HelperMethods.MenuInteraction([
                         "0. Return",
                         "1. Name",
                         "2. Price",
                         "3. Description",
                         "4. Availability"
-                    });
+                    ]);
 
                     switch (optionSelected)
                     {

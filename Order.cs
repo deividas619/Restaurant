@@ -14,7 +14,7 @@ namespace Restaurant
 {
     public interface ISendEmail
     {
-        static void SendEmail(string customerBill, string emailAddress)
+        static void SendEmail()
         {
         }
     }
@@ -96,7 +96,8 @@ namespace Restaurant
             else
             {
                 HelperMethods.PrintError($"Table {tableNumber} not found!");
-                HelperMethods.ProceedIn(3);
+                //HelperMethods.ProceedIn(3);
+                HelperMethods.ReturnToMainMenu();
             }
         }
         public void AddItem(Item item, int amount)
@@ -125,7 +126,7 @@ namespace Restaurant
             foreach (var ongoingOrder in Program.database.Order.Where(o => o.OrderStatus == "Ongoing"))
             {
                 Console.WriteLine($"\nOrder: {ongoingOrder.OrderID}. Table: {ongoingOrder.Table.TableNumber}");
-                Console.WriteLine($"   Estimated Finish Time: {ongoingOrder.EstimatedFinishTime.AddMinutes(1).ToString("HH:mm")}");
+                Console.WriteLine($"   Estimated Finish Time: {ongoingOrder.EstimatedFinishTime.AddMinutes(1):HH:mm}");
 
                 int counter = 1;
                 foreach (var orderItem in ongoingOrder.Items)
@@ -135,7 +136,7 @@ namespace Restaurant
             }
             HelperMethods.ReturnToMainMenu();
         }
-        public static void CloseTable(List<Table> tables, List<string> breadCrumb)
+        public static void CloseTable(List<Table> tables, List<string> BreadCrumb)
         {
             Table.CheckTableAvailability();
             Console.Write("Which table placed an order (1-8): ");
@@ -168,9 +169,9 @@ namespace Restaurant
             }
 
             List<OrderItem> items = Program.database.Order.Where(o => o.Table.TableNumber == tableNumber).SelectMany(i => i.Items).ToList();
-            breadCrumb.Add("Generate bill");
+            BreadCrumb.Add("Generate bill");
             GenerateBill(tableNumber, items, totalAmountForTable);
-            breadCrumb.Remove("Generate bill");
+            BreadCrumb.Remove("Generate bill");
             table.IsFree = true;
         }
         public decimal CalculateTotalAmount()
@@ -187,7 +188,7 @@ namespace Restaurant
             int totalAmountLength = bill.TotalAmountForTable.ToString().Length;
             string restaurantBill = $@"
 |-------------------------------------|
-|  Date: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}
+|  Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
 |
 |  Table: {bill.TableNumber}
 |  Items:
@@ -202,7 +203,7 @@ namespace Restaurant
 
             string customerBill = $@"
 |-------------------------------------|
-|  Date: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}
+|  Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
 |
 |  Table: {bill.TableNumber}
 |  Items:
@@ -241,7 +242,7 @@ namespace Restaurant
 
             Console.WriteLine("\nPrinting bill for restaurant...");
             Console.WriteLine("Saving restaurant bill to Bills.txt");
-            File.AppendAllText(@"Bills.txt", restaurantBill);
+            File.AppendAllText("Bills.txt", restaurantBill);
 
             do
             {
