@@ -188,12 +188,13 @@ namespace Restaurant
             int totalAmountLength = bill.TotalAmountForTable.ToString().Length;
             string restaurantBill = $@"
 |-------------------------------------|
+|############### JAMMY ###############
+|
 |  Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
 |
 |  Table: {bill.TableNumber}
 |  Items:
 {string.Join(Environment.NewLine, bill.Items.Select(item => $"|  - ({item.Amount}) {Truncate(item.Item.Name, 15)}"))}
-|
 |
 |
 |  Total amount: {bill.TotalAmountForTable + "€"}{new string(' ', 25 - totalAmountLength)}
@@ -203,12 +204,13 @@ namespace Restaurant
 
             string customerBill = $@"
 |-------------------------------------|
+|############### JAMMY ###############
+|
 |  Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
 |
 |  Table: {bill.TableNumber}
 |  Items:
 {string.Join(Environment.NewLine, bill.Items.Select(item => $"|  - ({item.Amount}) {Truncate(item.Item.Name, 15)}"))}
-|
 |
 |
 |  Total amount: {bill.TotalAmountForTable + "€"}{new string(' ', 25 - totalAmountLength)}
@@ -283,9 +285,9 @@ namespace Restaurant
         public static void SendEmail(string customerBill, string emailAddress)
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Restaurant mailing system", "dscep93@gmail.com"));
+            message.From.Add(new MailboxAddress("Jammy mailing system", "dscep93@gmail.com"));
             message.To.Add(new MailboxAddress("", emailAddress));
-            message.Subject = "Restaurant bill";
+            message.Subject = "Jammy bill";
             message.Body = new TextPart("plain") { Text = customerBill };
             Console.WriteLine($"\nSending the bill to {emailAddress}");
             try

@@ -25,7 +25,7 @@ namespace Restaurant
             $"Thu (from {defaultHourFrom} to {defaultHourTo})",
             $"Fri (from {defaultHourFrom} to {defaultHourTo})",
             $"Sat (from {defaultHourFrom} to {defaultHourTo})",
-            "Sun (day off)"
+            $"Sun (from {defaultHourFrom} to {defaultHourTo})"
         ];
 
         public Restaurant(string name, List<Employee> employees)
