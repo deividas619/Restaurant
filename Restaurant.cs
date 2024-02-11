@@ -15,18 +15,7 @@ namespace Restaurant
     {
         public static string Name { get; set; }
         private static List<Employee> Employees;
-        private static string defaultHourFrom = "10:00";
-        private static string defaultHourTo = "22:00";
-        public static List<string> WorkingHours =
-        [
-            $"Mon (from {defaultHourFrom} to {defaultHourTo})",
-            $"Tue (from {defaultHourFrom} to {defaultHourTo})",
-            $"Wed (from {defaultHourFrom} to {defaultHourTo})",
-            $"Thu (from {defaultHourFrom} to {defaultHourTo})",
-            $"Fri (from {defaultHourFrom} to {defaultHourTo})",
-            $"Sat (from {defaultHourFrom} to {defaultHourTo})",
-            $"Sun (from {defaultHourFrom} to {defaultHourTo})"
-        ];
+        public static List<string> WorkingHours = Program.database.WorkingHours;
 
         public Restaurant(string name, List<Employee> employees)
         {
@@ -39,9 +28,9 @@ namespace Restaurant
             string newHourFrom = null;
             string newHourTo = null;
 
-            List<string> menuOptions = WorkingHours.ToList();
-
+            List<string> menuOptions = new List<string>(WorkingHours.Select(x => x.ToString()).ToList());
             optionSelected = HelperMethods.MenuInteraction(menuOptions);
+            string selectedDayOfWeek = menuOptions[optionSelected].Split(' ')[0];
 
             Console.WriteLine($"\nEditing: {menuOptions[optionSelected]}");
             while (true)
@@ -87,13 +76,15 @@ namespace Restaurant
                     HelperMethods.PrintError("Incorrect format!");
                 }
             }
-
-            menuOptions[optionSelected] = menuOptions[optionSelected].Replace(defaultHourFrom, newHourFrom).Replace(defaultHourTo, newHourTo);
+            string newWorkingHours = $"{selectedDayOfWeek} (from {newHourFrom} to {newHourTo})";
+            menuOptions[optionSelected] = newWorkingHours;
             WorkingHours = menuOptions;
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("\nSuccessfully edited to: ");
             Console.ResetColor();
             Console.Write(menuOptions[optionSelected]);
+            Program.database.WorkingHours = menuOptions;
+            Program.UpdateDatabase(Program.database);
             HelperMethods.ReturnToMainMenu();
         }
     }

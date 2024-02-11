@@ -11,12 +11,14 @@ namespace Restaurant
     {
         public static string pw = ReturnPW();
         public static RestaurantData database = JsonConvert.DeserializeObject<RestaurantData>(File.ReadAllText("Database.json"));
+        public static readonly CancellationTokenSource cts = new CancellationTokenSource();
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            CancellationTokenSource cts = new CancellationTokenSource();
             Console.CancelKeyPress += (sender, args) =>
             {
+                //Console.Write("Cancelling...");
+                //HelperMethods.ProceedIn(3);
                 args.Cancel = true;
                 cts.Cancel();
             };
@@ -38,7 +40,6 @@ namespace Restaurant
 
 /*
  * TO-DO
- * object Restaurant doesn't have property for working hours
  * cancel operation if ctrl + c sometimes is cancelling only from 2nd input
  * cancellation token messes up other inputs like providing username for login
  * fix auto logout timer when manager is logged in

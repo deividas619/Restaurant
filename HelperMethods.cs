@@ -199,11 +199,13 @@ namespace Restaurant
             {
                 Console.Write("\nUsername: ");
                 username = Console.ReadLine();
-                if (_cancellation.Token.IsCancellationRequested)
+                //if (_cancellation.Token.IsCancellationRequested)
+                if (Program.cts.IsCancellationRequested)
                 {
                     Console.Write("\nCancelled... ");
-                    ProceedIn(3);
-                    _cancellation.Cancel();
+                    //ProceedIn(3);
+                    //_cancellation.Cancel();
+                    Program.cts.Cancel();
                     return;
                 }
 
@@ -241,7 +243,7 @@ namespace Restaurant
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\nLogin successful!");
                     Console.ResetColor();
-                    ProceedIn(3);
+                    //ProceedIn(3);
                     CurrentUser = username;
                     _keyPressed = false;
                     if (Employees.First(e => e.Username == username).IsManager == true)

@@ -14,7 +14,7 @@ namespace Restaurant
 {
     public interface ISendEmail
     {
-        static void SendEmail()
+        static void SendEmail(string customerBill, string emailAddress)
         {
         }
     }

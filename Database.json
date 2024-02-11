@@ -131,5 +131,14 @@
       "IsDrink": true,
       "IsAvailable": true
     }
+  ],
+  "WorkingHours": [
+    "Mon (from 10:00 to 22:00)",
+    "Tue (from 10:00 to 22:00)",
+    "Wed (from 10:00 to 22:00)",
+    "Thu (from 10:00 to 22:00)",
+    "Fri (from 10:00 to 22:00)",
+    "Sat (from 10:00 to 22:00)",
+    "Sun (from 10:00 to 22:00)"
   ]
 }
