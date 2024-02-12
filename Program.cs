@@ -11,19 +11,10 @@ namespace Restaurant
     {
         public static string pw = ReturnPW();
         public static RestaurantData database = JsonConvert.DeserializeObject<RestaurantData>(File.ReadAllText("Database.json"));
-        public static readonly CancellationTokenSource cts = new CancellationTokenSource();
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.CancelKeyPress += (sender, args) =>
-            {
-                //Console.Write("Cancelling...");
-                //HelperMethods.ProceedIn(3);
-                args.Cancel = true;
-                cts.Cancel();
-            };
-
-            HelperMethods.InitMainMenu(cts);
+            HelperMethods.InitMainMenu();
         }
 
         public static void UpdateDatabase(RestaurantData database)
@@ -33,7 +24,7 @@ namespace Restaurant
         }
         public static string ReturnPW()
         {
-            return "mraabfqiwapjvukm";
+            return "";
         }
     }
 }

@@ -11,15 +11,13 @@ namespace Restaurant
 {
     internal class HelperMethods
     {
-        public static CancellationTokenSource _cancellation;
         public static List<string> BreadCrumb = new List<string>();
         public static string CurrentUser = null!;
         private static Timer _autoLogout;
         private static bool _keyPressed;
         
-        public static void InitMainMenu(CancellationTokenSource cts)
+        public static void InitMainMenu()
         {
-            _cancellation = cts;
             BreadCrumb.Add("Main menu");
             
             var Tables = Program.database.Tables;
@@ -192,6 +190,7 @@ namespace Restaurant
         }
         private static void Login(ref string CurrentUser)
         {
+            CancellationTokenSource cts = GenerateCTS();
             var Employees = Program.database.Employees;
             string username = null;
 
@@ -199,17 +198,13 @@ namespace Restaurant
             {
                 Console.Write("\nUsername: ");
                 username = Console.ReadLine();
-                //if (_cancellation.Token.IsCancellationRequested)
-                if (Program.cts.IsCancellationRequested)
+                Thread.Sleep(1);
+                if (cts.IsCancellationRequested) // skips the check even if ctrl + c is pressed but on 2nd iteration the if check works
                 {
-                    Console.Write("\nCancelled... ");
-                    //ProceedIn(3);
-                    //_cancellation.Cancel();
-                    Program.cts.Cancel();
+                    DispoteCTS(cts);
                     return;
                 }
 
-                //if (Employees.FirstOrDefault(e => e.Username == username) != null)
                 if (Employees.Any(e => e.Username == username))
                 {
                     var loggedInEmployee = Employees.FirstOrDefault(e => e.Username == username);
@@ -243,12 +238,12 @@ namespace Restaurant
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\nLogin successful!");
                     Console.ResetColor();
-                    //ProceedIn(3);
+                    ProceedIn(3);
                     CurrentUser = username;
                     _keyPressed = false;
                     if (Employees.First(e => e.Username == username).IsManager == true)
                     {
-                        //StartAutoLogoutTimer(_cancellation);
+                        //StartAutoLogoutTimer();
                     }
                     var optionSelected = -1;
                     BreadCrumb.Add("Manager menu");
@@ -266,7 +261,7 @@ namespace Restaurant
                         {
                             case 0:
                                 Console.Write("\nLogging out... ");
-                                Logout(_cancellation);
+                                Logout();
                                 ProceedIn(3);
                                 return;
                             case 1:
@@ -310,7 +305,7 @@ namespace Restaurant
             }
             while (counter < 4);
         }
-        private static void Logout(CancellationTokenSource _cancellation)
+        private static void Logout()
         {
             CurrentUser = null;
             StopAutoLogoutTimer();
@@ -343,7 +338,7 @@ namespace Restaurant
             }
             return password;
         }
-        private static void StartAutoLogoutTimer(CancellationTokenSource _cancellation)
+        private static void StartAutoLogoutTimer()
         {
             _autoLogout = new Timer(_ =>
             {
@@ -353,7 +348,7 @@ namespace Restaurant
                     Console.Write("Logging out due to inactivity... ");
                     ProceedIn(3);
                     StopAutoLogoutTimer();
-                    Logout(_cancellation);
+                    Logout();
                 }
                 _keyPressed = false;
             }, null, 10000, 10000);
@@ -472,6 +467,26 @@ namespace Restaurant
                 }
             }
             while (optionSelected != 0);
+        }
+
+        public static CancellationTokenSource GenerateCTS()
+        {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (sender, args) =>
+            {
+                //Console.Write("Cancelling...");
+                //HelperMethods.ProceedIn(3);
+                args.Cancel = true;
+                cts.Cancel();
+            };
+            return cts;
+        }
+
+        public static void DispoteCTS(CancellationTokenSource cts)
+        {
+            Console.Write("\nCancelled... ");
+            ProceedIn(3);
+            cts.Dispose();
         }
     }
 }

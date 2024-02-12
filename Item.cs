@@ -37,56 +37,52 @@ namespace Restaurant
         }
         public static void AddItem(List<Item> Items)
         {
+            CancellationTokenSource cts = HelperMethods.GenerateCTS();
             do
             {
                 Console.WriteLine("\nProvide new item information:");
                 Console.Write("Name: ");
                 var newItemName = Console.ReadLine();
-                if (HelperMethods._cancellation.Token.IsCancellationRequested)
+                Thread.Sleep(1);
+                if (cts.Token.IsCancellationRequested)
                 {
-                    Console.Write("\nCancelled... ");
-                    HelperMethods.ProceedIn(3);
-                    HelperMethods._cancellation.Cancel();
+                    HelperMethods.DispoteCTS(cts);
                     return;
                 }
 
                 Console.Write("Price: ");
                 decimal.TryParse(Console.ReadLine(), out var newItemPrice);
-                if (HelperMethods._cancellation.Token.IsCancellationRequested)
+                Thread.Sleep(1);
+                if (cts.Token.IsCancellationRequested)
                 {
-                    Console.Write("\nCancelled... ");
-                    HelperMethods.ProceedIn(3);
-                    HelperMethods._cancellation.Cancel();
+                    HelperMethods.DispoteCTS(cts);
                     return;
                 }
 
                 Console.Write("Drink? (y/N): ");
                 var newItemIsDrink = Console.ReadLine();
-                if (HelperMethods._cancellation.Token.IsCancellationRequested)
+                Thread.Sleep(1);
+                if (cts.Token.IsCancellationRequested)
                 {
-                    Console.Write("\nCancelled... ");
-                    HelperMethods.ProceedIn(3);
-                    HelperMethods._cancellation.Cancel();
+                    HelperMethods.DispoteCTS(cts);
                     return;
                 }
 
                 Console.Write("Food? (y/N): ");
                 var newItemIsFood = Console.ReadLine();
-                if (HelperMethods._cancellation.Token.IsCancellationRequested)
+                Thread.Sleep(1);
+                if (cts.Token.IsCancellationRequested)
                 {
-                    Console.Write("\nCancelled... ");
-                    HelperMethods.ProceedIn(3);
-                    HelperMethods._cancellation.Cancel();
+                    HelperMethods.DispoteCTS(cts);
                     return;
                 }
 
                 Console.Write("Description: ");
                 var newItemDescription = Console.ReadLine();
-                if (HelperMethods._cancellation.Token.IsCancellationRequested)
+                Thread.Sleep(1);
+                if (cts.Token.IsCancellationRequested)
                 {
-                    Console.Write("\nCancelled... ");
-                    HelperMethods.ProceedIn(3);
-                    HelperMethods._cancellation.Cancel();
+                    HelperMethods.DispoteCTS(cts);
                     return;
                 }
 

@@ -71,19 +71,20 @@ namespace Restaurant
         }
         public static void MakeTableReservation()
         {
+            CancellationTokenSource cts = HelperMethods.GenerateCTS();
             CheckTableAvailability();
 
             do
             {
                 Console.Write("\nWhich table to reserve (1-8): ");
                 var input = Console.ReadLine();
-                if (HelperMethods._cancellation.Token.IsCancellationRequested)
+                Thread.Sleep(1);
+                if (cts.Token.IsCancellationRequested)
                 {
-                    Console.Write("\nCancelled... ");
-                    HelperMethods.ProceedIn(3);
-                    HelperMethods._cancellation.Cancel();
+                    HelperMethods.DispoteCTS(cts);
                     return;
                 }
+
                 if (int.TryParse(input, out var tableNumber))
                 {
                     var table = Program.database.Tables.FirstOrDefault(t => t.TableNumber == tableNumber);

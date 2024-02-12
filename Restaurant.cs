@@ -24,6 +24,7 @@ namespace Restaurant
         }
         public static void SetWorkingHours()
         {
+            CancellationTokenSource cts = HelperMethods.GenerateCTS();
             var optionSelected = -1;
             string newHourFrom = null;
             string newHourTo = null;
@@ -37,11 +38,10 @@ namespace Restaurant
             {
                 Console.Write("Enter new hours 'from' in 23:59 format: ");
                 newHourFrom = Console.ReadLine();
-                if (HelperMethods._cancellation.Token.IsCancellationRequested)
+                Thread.Sleep(1);
+                if (cts.Token.IsCancellationRequested)
                 {
-                    Console.Write("\nCancelled... ");
-                    HelperMethods.ProceedIn(3);
-                    HelperMethods._cancellation.Cancel();
+                    HelperMethods.DispoteCTS(cts);
                     return;
                 }
 
@@ -59,11 +59,10 @@ namespace Restaurant
             {
                 Console.Write("Enter new hours 'to' in 23:59 format: ");
                 newHourTo = Console.ReadLine();
-                if (HelperMethods._cancellation.Token.IsCancellationRequested)
+                Thread.Sleep(1);
+                if (cts.Token.IsCancellationRequested)
                 {
-                    Console.Write("\nCancelled... ");
-                    HelperMethods.ProceedIn(3);
-                    HelperMethods._cancellation.Cancel();
+                    HelperMethods.DispoteCTS(cts);
                     return;
                 }
 

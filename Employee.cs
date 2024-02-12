@@ -62,24 +62,23 @@ namespace Restaurant
         }
         public static void AddEmployee(List<Employee> Employees)
         {
+            CancellationTokenSource cts = HelperMethods.GenerateCTS();
             Console.WriteLine("\nProvide new employee information:");
             Console.Write("Name: ");
             var newEmployeeName = Console.ReadLine();
-            if (HelperMethods._cancellation.Token.IsCancellationRequested)
+            Thread.Sleep(1);
+            if (cts.Token.IsCancellationRequested)
             {
-                Console.Write("\nCancelled... ");
-                HelperMethods.ProceedIn(3);
-                HelperMethods._cancellation.Cancel();
+                HelperMethods.DispoteCTS(cts);
                 return;
             }
 
             Console.Write("Surname: ");
             var newEmployeeSurname = Console.ReadLine();
-            if (HelperMethods._cancellation.Token.IsCancellationRequested)
+            Thread.Sleep(1);
+            if (cts.Token.IsCancellationRequested)
             {
-                Console.Write("\nCancelled... ");
-                HelperMethods.ProceedIn(3);
-                HelperMethods._cancellation.Cancel();
+                HelperMethods.DispoteCTS(cts);
                 return;
             }
 
