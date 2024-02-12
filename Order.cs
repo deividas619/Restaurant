@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MimeKit;
 using MailKit;
@@ -252,8 +253,24 @@ namespace Restaurant
                 var input = Console.ReadLine();
                 if (input.ToUpper() == "Y")
                 {
-                    Console.Write("Email: ");
-                    var emailAddress = Console.ReadLine();
+                    string emailAddress;
+                    while (true)
+                    {
+                        Console.Write("Email: ");
+                        emailAddress = Console.ReadLine();
+                        try
+                        {
+                            var addressCheck = new MailAddress(emailAddress);
+                            if (addressCheck.Address == emailAddress.Trim()) ;
+                            {
+                                break;
+                            }
+                        }
+                        catch
+                        {
+                            HelperMethods.PrintError("Incorrect email format!");
+                        }
+                    }
                     Console.Write($"\nSend customer bill to {emailAddress}? (y/N): ");
                     input = Console.ReadLine();
                     if (input.ToUpper() == "Y")

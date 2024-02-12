@@ -31,7 +31,7 @@ namespace Restaurant
 
 /*
  * TO-DO
- * cancel operation if ctrl + c sometimes is cancelling only from 2nd input
+ * cancel operation if ctrl + c sometimes is cancelling only from 2nd interation of the cts check
  * cancellation token messes up other inputs like providing username for login (maybe use dispose() of the cts?)
  * fix auto logout timer when manager is logged in
  * use async for email sending
