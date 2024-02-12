@@ -1,11 +1,11 @@
-﻿using Restaurant;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Restaurant.Services;
 
-namespace Restaurant
+namespace Restaurant.Repositories
 {
     public class Table
     {
@@ -15,7 +15,7 @@ namespace Restaurant
 
         public static void CheckTableAvailability()
         {
-             Console.WriteLine(@"
+            Console.WriteLine(@"
 |---------------------------------|
 |  _____       _____       _____  |
 | |     |     |     |     |     | |

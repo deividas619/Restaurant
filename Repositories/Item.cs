@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Restaurant.Services;
 
-namespace Restaurant
+namespace Restaurant.Repositories
 {
     public class Item
     {
@@ -94,8 +95,8 @@ namespace Restaurant
                 {
                     var newItemDrink = false;
                     var newItemFood = false;
-                    if (newItemIsDrink is "y" or "Y" ? newItemDrink = true : newItemDrink = false);
-                    if (newItemIsFood is "y" or "Y" ? newItemFood = true : newItemFood = false);
+                    if (newItemIsDrink is "y" or "Y" ? newItemDrink = true : newItemDrink = false) ;
+                    if (newItemIsFood is "y" or "Y" ? newItemFood = true : newItemFood = false) ;
                     if (!newItemDrink && !newItemFood)
                     {
                         HelperMethods.PrintError("Neither food nor drink!");

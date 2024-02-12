@@ -3,6 +3,8 @@ using System.Text.Json.Serialization;
 using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Restaurant.Models;
+using Restaurant.Services;
 using Formatting = Newtonsoft.Json.Formatting;
 
 namespace Restaurant
@@ -11,19 +13,20 @@ namespace Restaurant
     {
         public static string pw = ReturnPW();
         public static RestaurantData database = JsonConvert.DeserializeObject<RestaurantData>(File.ReadAllText("Database.json"));
-        public static readonly CancellationTokenSource cts = new CancellationTokenSource();
+        //public static readonly CancellationTokenSource cts = new CancellationTokenSource();
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.CancelKeyPress += (sender, args) =>
+            /*Console.CancelKeyPress += (sender, args) =>
             {
                 //Console.Write("Cancelling...");
                 //HelperMethods.ProceedIn(3);
                 args.Cancel = true;
                 cts.Cancel();
-            };
+            };*/
 
-            HelperMethods.InitMainMenu(cts);
+            IHelperMethods init = new HelperMethods();
+            init.InitMenu();
         }
 
         public static void UpdateDatabase(RestaurantData database)

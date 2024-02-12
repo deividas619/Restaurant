@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Restaurant.Services;
 
-namespace Restaurant
+namespace Restaurant.Repositories
 {
     public class Employee
     {
@@ -194,7 +195,7 @@ namespace Restaurant
                             input = Console.ReadLine();
                             if (input is "y" or "Y")
                             {
-                                if (employeeToEdit.IsEmployed == false ? employeeToEdit.IsEmployed = true : employeeToEdit.IsEmployed = false);
+                                if (employeeToEdit.IsEmployed == false ? employeeToEdit.IsEmployed = true : employeeToEdit.IsEmployed = false) ;
                                 Program.UpdateDatabase(Program.database);
                             }
                             else if (input is "n" or "N")
@@ -213,7 +214,7 @@ namespace Restaurant
                             {
                                 if (Employees.Count(e => e.IsManager) > 1)
                                 {
-                                    if (employeeToEdit.IsManager == false ? employeeToEdit.IsManager = true : employeeToEdit.IsManager = false);
+                                    if (employeeToEdit.IsManager == false ? employeeToEdit.IsManager = true : employeeToEdit.IsManager = false) ;
                                     Program.UpdateDatabase(Program.database);
                                 }
                                 else

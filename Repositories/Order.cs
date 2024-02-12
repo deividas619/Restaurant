@@ -9,12 +9,13 @@ using MimeKit;
 using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Restaurant.Services;
 
-namespace Restaurant
+namespace Restaurant.Repositories
 {
     public interface ISendEmail
     {
-        static void SendEmail(string customerBill, string emailAddress)
+        static void SendEmail()
         {
         }
     }
@@ -111,7 +112,7 @@ namespace Restaurant
             {
                 orderTime = AverageTimePerOrder;
             }
-            this.EstimatedFinishTime = DateTime.Now.AddMinutes(orderTime);
+            EstimatedFinishTime = DateTime.Now.AddMinutes(orderTime);
             await Task.Delay(TimeSpan.FromSeconds(60));
 
             foreach (var item in Items)
@@ -143,7 +144,7 @@ namespace Restaurant
             int.TryParse(Console.ReadLine(), out int tableNumber);
             var table = tables.FirstOrDefault(t => t.TableNumber == tableNumber);
             decimal totalAmountForTable = 0;
-            List<Order> ordersForTable = Order.CombineOrdersForTable(table.TableNumber);
+            List<Order> ordersForTable = CombineOrdersForTable(table.TableNumber);
 
             if (table != null)
             {
@@ -240,7 +241,7 @@ namespace Restaurant
                 }
             }
             while (true);
-            
+
 
             Console.WriteLine("\nPrinting bill for restaurant...");
             Console.WriteLine("Saving restaurant bill to Bills.txt");

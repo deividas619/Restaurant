@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using Restaurant.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
@@ -7,21 +8,37 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Restaurant
+namespace Restaurant.Services
 {
-    internal class HelperMethods
+    public interface IHelperMethods
+    {
+        void InitMenu();
+        /*void ProceedIn(int from);
+        void PrintWelcomeScreen();
+        int MenuInteraction(List<string> menuOptions);
+        void ReturnToMainMenu();
+        void PrintError(string message);
+        void Login(ref string CurrentUser);
+        void Logout();
+        string GetUserEncryptedPassword();
+        void StartAutoLogoutTimer();
+        void StopAutoLogoutTimer();
+        void EmployeeManagement();
+        void RestaurantManagement();
+        void ItemManagement();*/
+    }
+    public class HelperMethods : IHelperMethods
     {
         public static CancellationTokenSource _cancellation;
         public static List<string> BreadCrumb = new List<string>();
         public static string CurrentUser = null!;
         private static Timer _autoLogout;
         private static bool _keyPressed;
-        
-        public static void InitMainMenu(CancellationTokenSource cts)
+
+        public void InitMainMenu()
         {
-            _cancellation = cts;
             BreadCrumb.Add("Main menu");
-            
+
             var Tables = Program.database.Tables;
             var Items = Program.database.Item;
 
@@ -72,7 +89,7 @@ namespace Restaurant
             }
             while (true);
         }
-        public static void ProceedIn(int from)
+        public void ProceedIn(int from)
         {
             Console.Write("Proceeding in: ");
             for (var i = from; i >= 1; i--)
@@ -83,7 +100,7 @@ namespace Restaurant
                 if (i == 0) Console.Write("\r" + new string(' ', Console.WindowWidth - 1) + "\r");
             }
         }
-        private static void PrintWelcomeScreen()
+        public void PrintWelcomeScreen()
         {
             Console.WriteLine("####################");
             Console.WriteLine("# Welcome to JAMMY #");
@@ -96,7 +113,7 @@ namespace Restaurant
                 Console.Write(CurrentUser + "\n");
             }
 
-            
+
             if (BreadCrumb.Count > 0)
             {
                 Console.WriteLine("");
@@ -104,7 +121,7 @@ namespace Restaurant
                 Console.WriteLine("\n");
             }
         }
-        public static int MenuInteraction(List<string> menuOptions)
+        public int MenuInteraction(List<string> menuOptions)
         {
             var coordinateBuffer = CurrentUser != null ? 4 : 3;
             var option = 0;
@@ -164,7 +181,7 @@ namespace Restaurant
             }
             return option;
         }
-        public static void ReturnToMainMenu()
+        public void ReturnToMainMenu()
         {
             Console.WriteLine("\nTo return press 'q'");
             while (true)
@@ -183,14 +200,14 @@ namespace Restaurant
                 }
             }
         }
-        public static void PrintError(string message)
+        public void PrintError(string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write(message);
             Console.ResetColor();
             Console.Write(" Try again...\n");
         }
-        private static void Login(ref string CurrentUser)
+        public void Login(ref string CurrentUser)
         {
             var Employees = Program.database.Employees;
             string username = null;
@@ -199,13 +216,11 @@ namespace Restaurant
             {
                 Console.Write("\nUsername: ");
                 username = Console.ReadLine();
-                //if (_cancellation.Token.IsCancellationRequested)
-                if (Program.cts.IsCancellationRequested)
+                if (_cancellation.Token.IsCancellationRequested)
                 {
                     Console.Write("\nCancelled... ");
-                    //ProceedIn(3);
-                    //_cancellation.Cancel();
-                    Program.cts.Cancel();
+                    ProceedIn(3);
+                    _cancellation.Cancel();
                     return;
                 }
 
@@ -243,7 +258,7 @@ namespace Restaurant
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\nLogin successful!");
                     Console.ResetColor();
-                    //ProceedIn(3);
+                    ProceedIn(3);
                     CurrentUser = username;
                     _keyPressed = false;
                     if (Employees.First(e => e.Username == username).IsManager == true)
@@ -310,14 +325,14 @@ namespace Restaurant
             }
             while (counter < 4);
         }
-        private static void Logout(CancellationTokenSource _cancellation)
+        public void Logout()
         {
             CurrentUser = null;
             StopAutoLogoutTimer();
             BreadCrumb.Remove("Manager menu");
             //return;
         }
-        public static string GetUserEncryptedPassword()
+        public string GetUserEncryptedPassword()
         {
             string password = null;
             while (true)
@@ -337,13 +352,13 @@ namespace Restaurant
                 }
                 else if (i.KeyChar != '\u0000')
                 {
-                    password += (i.KeyChar);
+                    password += i.KeyChar;
                     Console.Write("*");
                 }
             }
             return password;
         }
-        private static void StartAutoLogoutTimer(CancellationTokenSource _cancellation)
+        /*public void StartAutoLogoutTimer()
         {
             _autoLogout = new Timer(_ =>
             {
@@ -357,16 +372,16 @@ namespace Restaurant
                 }
                 _keyPressed = false;
             }, null, 10000, 10000);
-        }
-        private static void StopAutoLogoutTimer()
+        }*/
+        /*public static void StopAutoLogoutTimer()
         {
             if (_autoLogout != null)
             {
                 _autoLogout.Dispose();
                 _autoLogout = null;
             }
-        }
-        private static void EmployeeManagement()
+        }*/
+        public void EmployeeManagement()
         {
             var Employees = Program.database.Employees;
             var optionSelected = -1;
@@ -407,7 +422,7 @@ namespace Restaurant
             }
             while (optionSelected != 0);
         }
-        private static void RestaurantManagement()
+        public void RestaurantManagement()
         {
             var optionSelected = -1;
 
@@ -432,7 +447,7 @@ namespace Restaurant
             }
             while (optionSelected != 0);
         }
-        private static void ItemManagement()
+        public void ItemManagement()
         {
             var Items = Program.database.Item;
             var optionSelected = -1;
