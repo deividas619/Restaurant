@@ -13,9 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Bills.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Database.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

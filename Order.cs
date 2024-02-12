@@ -55,7 +55,7 @@ namespace Restaurant
             if (table != null)
             {
                 Console.WriteLine("\nSelect items ordered:");
-                List<string> itemsList = items.Select(i => i.Name).ToList();
+                List<string> itemsList = items.Select(i => $"({i.Price}€) {i.Name}").ToList();
                 var order = new Order(table);
 
                 do
@@ -64,7 +64,7 @@ namespace Restaurant
                     var amount = 0;
                     do
                     {
-                        Console.Write($"\nSelected: {itemsList[optionSelected]}. Amount: ");
+                        Console.Write($"\nSelected: {itemsList[optionSelected].Split(" ")[1]}. Amount: ");
                         int.TryParse(Console.ReadLine(), out amount);
                         if (amount < 1 || amount > 99)
                         {
