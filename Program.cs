@@ -36,3 +36,11 @@ namespace Restaurant
  * fix auto logout timer when manager is logged in
  * use async for email sending
 */
+
+/*
+ * USEFUL LINKS
+ * https://quicktype.io/csharp [JSON TO C#]
+ * https://json2csharp.com/ [JSON TO C#]
+ * https://codebeautify.org/jsonviewer/cbfb9fe5 [JSON TO OBJECT STRUCTURE]
+ * https://jsonblob.com/ [JSON TO OBJECT STRUCTURE]
+*/
